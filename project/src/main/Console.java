@@ -7,6 +7,7 @@ import ast.Exp;
 import interpreter.*;
 import parser.*;
 import parser.Parser;
+import values.Value;
 
 public class Console {
 
@@ -17,8 +18,8 @@ public class Console {
 		while (true) {
 			try {
 				Exp e = parser.Start();
-				System.out.println("Parse OK!" );
-				System.out.println(Interpreter.interpret(e));
+				Value v = Interpreter.interpret(e);
+				System.out.println(v);
 			} catch (TokenMgrError e) {
 				System.out.println("Lexical Error!");
 				e.printStackTrace();

@@ -27,6 +27,8 @@ TOKEN : /* OPERATORS */
 | < MINUS : "-">
 | < GT: ">" >
 | < LT: "<" >
+| < GTOEQ: ">=" >
+| < LTOEQ: "<=" >
 | < NEG: "!">
 | < DIV : "/">
 | < LPAR : "(" >
@@ -34,8 +36,9 @@ TOKEN : /* OPERATORS */
 | < TRUE : "true" >
 | < FALSE : "false" >
 | < EQ : "=" >
-| < AND : "and" >
-| < OR : "or" >
+| < NEQ : "!=" >
+| < AND : "&&" >
+| < OR : "||" >
 | < IFQ : "?" >
 | < COLON : ":" >
 | < EOL: "\n" >
@@ -61,17 +64,26 @@ Exp Start() :
 Exp logic():
 { Exp e1,e2; }
 {
- e1 = boolOp() ( <AND> e2=boolOp() { e1 = new ASTAnd(e1,e2); }
-                | <OR> e2=boolOp() { e1 = new ASTOr(e1,e2); } )*
+ e1 = eqOp() ( <AND> e2=eqOp() { e1 = new ASTAnd(e1,e2); }
+                | <OR> e2=eqOp() { e1 = new ASTOr(e1,e2); } )*
+  { return e1; }
+}
+
+Exp eqOp():
+{ Exp e1,e2; }
+{
+ e1 = boolOp() ( <EQ> e2=boolOp() { e1 = new ASTEq(e1,e2); }
+                | <NEQ> e2=boolOp() {e1 = new ASTNEq(e1, e2); } )*
   { return e1; }
 }
 
 Exp boolOp():
 { Exp e1,e2; }
 {
- e1 = Expr() ( <EQ> e2=Expr() { e1 = new ASTEq(e1,e2); }
-                | <GT> e2=Expr() { e1 = new ASTGr(e1,e2); }
-                | <LT> e2=Expr() { e1 = new ASTLt(e1,e2); } )*
+ e1 = Expr() ( <GT> e2=Expr() { e1 = new ASTGr(e1,e2); }
+                | <LT> e2=Expr() { e1 = new ASTLt(e1,e2); }
+                | <GTOEQ> e2=Expr() { e1 = new ASTGrOrEq(e1,e2); }
+                | <LTOEQ> e2=Expr() { e1 = new ASTLTOrEq(e1,e2); } )*
   { return e1; }
 }
 
@@ -97,9 +109,9 @@ Exp Term() :
 Exp Fact() :
 { Token x; Exp e;}
 {
-  	x = <Num>
+  	x = <Num> // x = <TRUE> | x = <FALSE>
  {
- 	return new ASTInt(Integer.parseInt(x.image));
+ 	return new ASTInt(Integer.parseInt(x.image)); // ast node true e false
  }
  |
    <LPAR> e = Expr() <RPAR> { return e; }
@@ -110,7 +122,7 @@ Exp Bool_Fact() :
 {
   	x = <TRUE> | x = <FALSE>
  {
- 	return new ASTInt(Integer.parseInt(x.image));
+ 	return new ASTInt(Integer.parseBool(x.image));
  }
  |
    <LPAR> e = Expr() <RPAR> { return e; }

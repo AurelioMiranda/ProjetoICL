@@ -48,6 +48,14 @@ public class Interpreter implements ast.Exp.Visitor<Value> {
 				return new BoolValue(false);
 			}
 		}
+		if (v instanceof BoolValue v1){
+			v = e.e2.accept(this);
+			if (v instanceof BoolValue v2){
+				if (v1.getValue() == v2.getValue())
+					return new BoolValue(true);
+				return new BoolValue(false);
+			}
+		}
 		throw new ArithmeticException();
 	}
 
@@ -116,6 +124,56 @@ public class Interpreter implements ast.Exp.Visitor<Value> {
 			v = astLt.e2.accept(this);
 			if (v instanceof IntValue v2){
 				if (v1.getValue() < v2.getValue())
+					return new BoolValue(true);
+				return new BoolValue(false);
+			}
+		}
+		throw new ArithmeticException();
+	}
+
+	@Override
+	public Value visit(ASTGrOrEq astGrOrEq) {
+		Value v = astGrOrEq.e1.accept(this);
+		if (v instanceof IntValue v1){
+			v = astGrOrEq.e2.accept(this);
+			if (v instanceof IntValue v2){
+				if (v1.getValue() >= v2.getValue())
+					return new BoolValue(true);
+				return new BoolValue(false);
+			}
+		}
+		throw new ArithmeticException();
+	}
+
+	@Override
+	public Value visit(ASTLTOrEq astltOrEq) {
+		Value v = astltOrEq.e1.accept(this);
+		if (v instanceof IntValue v1){
+			v = astltOrEq.e2.accept(this);
+			if (v instanceof IntValue v2){
+				if (v1.getValue() <= v2.getValue())
+					return new BoolValue(true);
+				return new BoolValue(false);
+			}
+		}
+		throw new ArithmeticException();
+	}
+
+	@Override
+	public Value visit(ASTNEq astneq) {
+		Value v = astneq.e1.accept(this);
+		if (v instanceof IntValue v1){
+			v = astneq.e2.accept(this);
+			if (v instanceof IntValue v2){
+				if (v1.getValue() != v2.getValue())
+					return new BoolValue(true);
+				return new BoolValue(false);
+			}
+		}
+		if (v instanceof BoolValue v1){
+			v = astneq.e2.accept(this);
+			if (v instanceof BoolValue v2){
+				if (v1.getValue() != v2.getValue())
 					return new BoolValue(true);
 				return new BoolValue(false);
 			}

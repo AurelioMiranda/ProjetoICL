@@ -23,41 +23,47 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int LT = 9;
   /** RegularExpression Id. */
-  int NEG = 10;
+  int GTOEQ = 10;
   /** RegularExpression Id. */
-  int DIV = 11;
+  int LTOEQ = 11;
   /** RegularExpression Id. */
-  int LPAR = 12;
+  int NEG = 12;
   /** RegularExpression Id. */
-  int RPAR = 13;
+  int DIV = 13;
   /** RegularExpression Id. */
-  int TRUE = 14;
+  int LPAR = 14;
   /** RegularExpression Id. */
-  int FALSE = 15;
+  int RPAR = 15;
   /** RegularExpression Id. */
-  int EQ = 16;
+  int TRUE = 16;
   /** RegularExpression Id. */
-  int AND = 17;
+  int FALSE = 17;
   /** RegularExpression Id. */
-  int OR = 18;
+  int EQ = 18;
   /** RegularExpression Id. */
-  int IFQ = 19;
+  int NEQ = 19;
   /** RegularExpression Id. */
-  int COLON = 20;
+  int AND = 20;
   /** RegularExpression Id. */
-  int EOL = 21;
+  int OR = 21;
   /** RegularExpression Id. */
-  int LET = 22;
+  int IFQ = 22;
   /** RegularExpression Id. */
-  int IN = 23;
+  int COLON = 23;
   /** RegularExpression Id. */
-  int INT = 24;
+  int EOL = 24;
   /** RegularExpression Id. */
-  int DIGIT = 25;
+  int LET = 25;
   /** RegularExpression Id. */
-  int ID = 26;
+  int IN = 26;
   /** RegularExpression Id. */
-  int LETTER = 27;
+  int INT = 27;
+  /** RegularExpression Id. */
+  int DIGIT = 28;
+  /** RegularExpression Id. */
+  int ID = 29;
+  /** RegularExpression Id. */
+  int LETTER = 30;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -74,6 +80,8 @@ public interface ParserConstants {
     "\"-\"",
     "\">\"",
     "\"<\"",
+    "\">=\"",
+    "\"<=\"",
     "\"!\"",
     "\"/\"",
     "\"(\"",
@@ -81,8 +89,9 @@ public interface ParserConstants {
     "\"true\"",
     "\"false\"",
     "\"=\"",
-    "\"and\"",
-    "\"or\"",
+    "\"!=\"",
+    "\"&&\"",
+    "\"||\"",
     "\"?\"",
     "\":\"",
     "\"\\n\"",
