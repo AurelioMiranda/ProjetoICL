@@ -1,0 +1,105 @@
+options {
+  STATIC=false;
+}
+
+PARSER_BEGIN(Parser)
+
+package parser;
+import ast.*;
+
+public class Parser {
+
+}
+
+PARSER_END(Parser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\r"
+}
+
+TOKEN :
+{
+  < Num: (["0"-"9"]) + >
+  |
+  < PLUS : "+" >
+  |
+  < MINUS : "-">
+  |
+  < TIMES : "*">
+  |
+  < DIV : "/">
+  |
+  < LPAR : "(" >
+  |
+  < RPAR : ")" >
+  |
+  < EL: "\n" >
+  |
+  < TRUE: "true" >
+  |
+  < FALSE: "false">
+  |
+  < AND: "&&" >
+  |
+  < OR: "||">
+  |
+  < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"] )* >
+}
+
+Exp Start() :
+{ Exp e; }
+{
+   e = Expr() <EL>  { return e; }
+}
+
+Exp Expr() :
+{ Exp e1, e2; }
+{
+   e1 = Term() 
+     [ <PLUS> e2 = Expr() { e1 = new ASTAdd(e1,e2); }
+     | <MINUS> e2 = Expr() { e1 = new ASTSub(e1,e2); } ]
+     { return e1; }
+}
+
+Exp Term() :
+{ Exp e1, e2; }
+{
+     e1 = Fact()
+     [ <TIMES> e2 = Term() { e1 = new ASTMult(e1,e2); }
+     | <DIV> e2 = Term() { e1 = new ASTDiv(e1,e2); } ]
+     { return e1; }
+}
+
+Exp Fact() :
+{ Token x; Exp e;}
+{
+  	x = <Num>
+ {
+ 	return new ASTInt(Integer.parseInt(x.image));
+ }
+ |
+   <LPAR> e = Expr() <RPAR> { return e; }
+}
+
+Exp Bool_Fact() :
+{ Token x; Exp e;}
+{
+  	x = <TRUE> | x = <FALSE>
+ {
+ 	return new ASTInt(Integer.parseInt(x.image));
+ }
+ |
+   <LPAR> e = Expr() <RPAR> { return e; }
+}
+/*
+Exp Bool_op():
+{ Exp e1; Exp e2; }
+{
+    e1 = Term()
+    [<AND> e2 = Bool_op() { e1 = new ASTMult(e1, e2)}
+    | <OR> e2 = Bool_op() { e1 = new ASTDiv(e1,e2); } ]
+    { return e2 }
+}*/
