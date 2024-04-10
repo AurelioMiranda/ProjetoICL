@@ -196,7 +196,13 @@ public class Parser implements ParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case Num:
       x = jj_consume_token(Num);
-        {if (true) return new ASTInt(Integer.parseInt(x.image));}
+        {if (true) return new ASTInt(Integer.parseInt(x.image));} // ast node true e false
+
+      break;
+    case MINUS:
+      jj_consume_token(MINUS);
+      e = Expr();
+                        {if (true) return new ASTSub(new ASTInt(0),e);}
       break;
     case LPAR:
       jj_consume_token(LPAR);
@@ -251,7 +257,7 @@ public class Parser implements ParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x300000,0x300000,0xc0000,0xc0000,0xf00,0xf00,0xa0,0xa0,0x2040,0x2040,0x4010,0x34000,};
+      jj_la1_0 = new int[] {0x300000,0x300000,0xc0000,0xc0000,0xf00,0xf00,0xa0,0xa0,0x2040,0x2040,0x4090,0x34000,};
    }
 
   /** Constructor with InputStream. */

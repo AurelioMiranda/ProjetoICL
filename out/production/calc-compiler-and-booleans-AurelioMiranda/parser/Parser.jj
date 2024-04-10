@@ -109,12 +109,12 @@ Exp Term() :
 Exp Fact() :
 { Token x; Exp e;}
 {
-  	x = <Num>
+  	x = <Num> // x = <TRUE> | x = <FALSE>
  {
- 	return new ASTInt(Integer.parseInt(x.image));
+ 	return new ASTInt(Integer.parseInt(x.image)); // ast node true e false
  }
- |
-   <LPAR> e = Expr() <RPAR> { return e; }
+ | <MINUS> e = Expr() { return new ASTSub(new ASTInt(0),e); }
+ | <LPAR> e = Expr() <RPAR> { return e; }
 }
 
 Exp Bool_Fact() :
@@ -122,7 +122,7 @@ Exp Bool_Fact() :
 {
   	x = <TRUE> | x = <FALSE>
  {
- 	return new ASTInt(Integer.parseInt(x.image));
+ 	return new ASTInt(Integer.parseBool(x.image));
  }
  |
    <LPAR> e = Expr() <RPAR> { return e; }

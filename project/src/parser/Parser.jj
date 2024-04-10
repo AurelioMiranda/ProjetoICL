@@ -113,8 +113,8 @@ Exp Fact() :
  {
  	return new ASTInt(Integer.parseInt(x.image)); // ast node true e false
  }
- |
-   <LPAR> e = Expr() <RPAR> { return e; }
+ | <MINUS> e = Expr() { return new ASTSub(new ASTInt(0),e); }
+ | <LPAR> e = Expr() <RPAR> { return e; }
 }
 
 Exp Bool_Fact() :
