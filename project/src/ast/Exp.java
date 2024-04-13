@@ -30,10 +30,7 @@ public interface Exp {
         T visit(ASTNEq astneq);
     }
 
-    //	 int eval();
-
     <T> T accept(Visitor<T> v);
-
 
 }
 
