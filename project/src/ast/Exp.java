@@ -28,6 +28,12 @@ public interface Exp {
         T visit(ASTLTOrEq astltOrEq);
 
         T visit(ASTNEq astneq);
+
+        T visit(ASTBool astbool);
+
+        T visit(ASTNeg astNeg);
+
+        T visit(ASTIdentifier astIdentifier);
     }
 
     <T> T accept(Visitor<T> v);

@@ -25,11 +25,12 @@ TOKEN : /* OPERATORS */
 | < PLUS : "+" >
 | < TIMES : "*" >
 | < MINUS : "-">
+| < NEG : "~">
 | < GT: ">" >
 | < LT: "<" >
 | < GTOEQ: ">=" >
 | < LTOEQ: "<=" >
-| < NEG: "!">
+| < DER: "!">
 | < DIV : "/">
 | < LPAR : "(" >
 | < RPAR : ")" >
@@ -92,8 +93,8 @@ Exp Expr() :
 { Exp e1, e2; }
 {
    e1 = Term()
-     [ <PLUS> e2 = Expr() { e1 = new ASTAdd(e1,e2); }
-     | <MINUS> e2 = Expr() { e1 = new ASTSub(e1,e2); } ]
+     [<MINUS> e2 = Expr() { e1 = new ASTSub(e1,e2); }
+     | <PLUS> e2 = Expr() { e1 = new ASTAdd(e1,e2); } ]
      { return e1; }
 }
 
@@ -101,38 +102,20 @@ Exp Term() :
 { Exp e1, e2; }
 {
      e1 = Fact()
-     [ <TIMES> e2 = Term() { e1 = new ASTMult(e1,e2); }
-     | <DIV> e2 = Term() { e1 = new ASTDiv(e1,e2); } ]
+     [ <DIV> e2 = Term() { e1 = new ASTDiv(e1,e2); }
+     | <TIMES> e2 = Term() { e1 = new ASTMult(e1,e2); } ]
      { return e1; }
 }
 
 Exp Fact() :
 { Token x; Exp e;}
 {
-  	x = <Num> // x = <TRUE> | x = <FALSE>
+  	x = <Num>
  {
- 	return new ASTInt(Integer.parseInt(x.image)); // ast node true e false
+ 	return new ASTInt(Integer.parseInt(x.image));
  }
+ | <TRUE> { return new ASTBool(true); }
+ | <FALSE> { return new ASTBool(false); }
  | <MINUS> e = Expr() { return new ASTSub(new ASTInt(0),e); }
  | <LPAR> e = Expr() <RPAR> { return e; }
 }
-
-Exp Bool_Fact() :
-{ Token x; Exp e;}
-{
-  	x = <TRUE> | x = <FALSE>
- {
- 	return new ASTInt(Integer.parseBool(x.image));
- }
- |
-   <LPAR> e = Expr() <RPAR> { return e; }
-}
-/*
-Exp Bool_op():
-{ Exp e1; Exp e2; }
-{
-    e1 = Term()
-    [<AND> e2 = Bool_op() { e1 = new ASTMult(e1, e2)}
-    | <OR> e2 = Bool_op() { e1 = new ASTDiv(e1,e2); } ]
-    { return e2 }
-}*/

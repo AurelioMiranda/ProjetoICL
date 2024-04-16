@@ -14,6 +14,16 @@ public class Interpreter implements ast.Exp.Visitor<Value> {
 	}
 
 	@Override
+	public Value visit(ASTBool astbool) {
+		return new BoolValue(astbool.value);
+	}
+
+	@Override
+	public Value visit(ASTNeg astNeg) {
+		return new BoolValue(!astNeg.value);
+	}
+
+	@Override
 	public Value visit(ASTMult e) {
 		Value v = e.arg1.accept(this);
 		if (v instanceof IntValue v1){
@@ -206,6 +216,29 @@ public class Interpreter implements ast.Exp.Visitor<Value> {
 			}
 		}
 		throw new ArithmeticException();
+	}
+
+	@Override
+	public Value visit(ASTIdentifier e) {
+		if (e.isStringIdentifier()) {
+			String identifierName = e.getName();
+                        /*
+                                ver na hashtable mais proxima se nao der ver na acima,..., and so on
+                        // Check if the identifier exists in the environment
+                        if (environment.containsKey(identifierName)) {
+                                return environment.get(identifierName);
+                        } else {
+                                throw new IllegalArgumentException("Undefined identifier: " + identifierName);
+                        }
+                         */
+			return null;
+		}
+		else if (e.isNumberIdentifier()) {
+			Integer identifierNumber = e.getNumber();
+			return new IntValue(identifierNumber);
+		} else {
+			throw new IllegalArgumentException("Invalid identifier");
+		}
 	}
 
 

@@ -33,7 +33,7 @@ public class Env<T> {
         return new Env<>(this);
     }
 
-    public Env<T> endScope() { //TODO: verify this
+    public Env<T> endScope() {
         return prev;
     }
 

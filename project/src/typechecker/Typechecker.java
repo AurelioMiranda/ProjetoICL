@@ -3,11 +3,13 @@ package typechecker;
 import ast.*;
 import types.*;
 
-public class Typechecker {  //TODO: verify this
+public class Typechecker {  //TODO: visitor
 
     public static Type typeCheck(Exp e) {
         if (e instanceof ASTInt) {
             return IntType.getIntType();
+        } else if (e instanceof ASTBool) {
+            return BoolType.getBoolType();
         } else if (e instanceof ASTAdd) {
             Exp arg2 = ((ASTAdd) e).arg2;
             Exp arg1 = ((ASTAdd) e).arg1;

@@ -75,6 +75,21 @@ public class CodeGen implements ast.Exp.Visitor<Void> {
 	}
 
 	@Override
+	public Void visit(ASTBool astbool) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTNeg astNeg) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTIdentifier astIdentifier) {
+		return null;
+	}
+
+	@Override
 	public Void visit(ASTAdd e) {
 		//e.arg1().accept(this);
 		//e.arg2().accept(this);
