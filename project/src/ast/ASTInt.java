@@ -1,6 +1,6 @@
 package ast;
 
-public class ASTInt implements ast.Exp  {
+public class ASTInt implements ast.Exp  { //TODO: Minus has conflicts (-3)*6
     public int value;
 
     public ASTInt(int value) {

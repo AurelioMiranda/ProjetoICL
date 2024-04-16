@@ -208,7 +208,7 @@ public class Parser implements ParserConstants {
       break;
     case MINUS:
       jj_consume_token(MINUS);
-      e = Fact();
+      e = Term();
                         {if (true) return new ASTSub(new ASTInt(0),e);}
       break;
     case LPAR:
@@ -240,7 +240,7 @@ public class Parser implements ParserConstants {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x300000,0x300000,0xc0000,0xc0000,0xf00,0xf00,0xa0,0xa0,0x2040,0x2040,0x34090,};
+      jj_la1_0 = new int[] {0x600000,0x600000,0x180000,0x180000,0x1e00,0x1e00,0xa0,0xa0,0x4040,0x4040,0x68090,};
    }
 
   /** Constructor with InputStream. */
@@ -357,7 +357,7 @@ public class Parser implements ParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[31];
+    boolean[] la1tokens = new boolean[32];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -371,7 +371,7 @@ public class Parser implements ParserConstants {
         }
       }
     }
-    for (int i = 0; i < 31; i++) {
+    for (int i = 0; i < 32; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

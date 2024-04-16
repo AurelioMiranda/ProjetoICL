@@ -116,6 +116,6 @@ Exp Fact() :
  }
  | <TRUE> { return new ASTBool(true); }
  | <FALSE> { return new ASTBool(false); }
- | <MINUS> e = Expr() { return new ASTSub(new ASTInt(0),e); }
+ | <MINUS> e = Term() { return new ASTSub(new ASTInt(0),e); }
  | <LPAR> e = Expr() <RPAR> { return e; }
 }
