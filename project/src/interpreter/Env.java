@@ -5,14 +5,14 @@ import java.util.Map;
 
 public class Env<T> {
 
-    private Map<String,T> table;
+    private Map<String, T> table;
     private Env<T> prev;
 
     public Env() {
         table = new Hashtable<>(20);
     }
 
-    public Env(Env<T> prev){
+    public Env(Env<T> prev) {
         this.prev = prev;
         this.table = new Hashtable<>(20);
     }
@@ -23,7 +23,7 @@ public class Env<T> {
 
     public T find(String id) {
         T val = table.get(id);
-        if (val == null){
+        if (val == null) {
             return prev.find(id);
         }
         return val;
@@ -33,9 +33,8 @@ public class Env<T> {
         return new Env<>(this);
     }
 
-    public Env<T> endScope() {
-        //TODO: finish this one
-        return null;
+    public Env<T> endScope() { //TODO: verify this
+        return prev;
     }
 
 }
