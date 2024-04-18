@@ -90,6 +90,11 @@ public class CodeGen implements ast.Exp.Visitor<Void> {
 	}
 
 	@Override
+	public Void visit(ASTNew astNew) {
+		return null;
+	}
+
+	@Override
 	public Void visit(ASTAdd e) {
 		//e.arg1().accept(this);
 		//e.arg2().accept(this);

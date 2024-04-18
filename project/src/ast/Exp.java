@@ -34,6 +34,8 @@ public interface Exp {
         T visit(ASTNeg astNeg);
 
         T visit(ASTIdentifier astIdentifier);
+
+        T visit(ASTNew astNew);
     }
 
     <T> T accept(Visitor<T> v);

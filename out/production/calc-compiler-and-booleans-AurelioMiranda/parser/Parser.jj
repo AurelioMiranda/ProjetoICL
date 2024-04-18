@@ -19,6 +19,7 @@ SKIP :
 | "\t"
 | "\r"
 }
+
 TOKEN : /* OPERATORS */
 {
   < Num: (["0"-"9"]) + >
@@ -42,6 +43,13 @@ TOKEN : /* OPERATORS */
 | < OR : "||" >
 | < IFQ : "?" >
 | < COLON : ":" >
+| < SEMICOLON : ";" >
+| < WHILE : "while" >
+| < DO : "do" >
+| < END : "end" >
+| < NEW : "new" >
+| < ASSIGN : ":=" >
+| < UNIT : "()" >
 | < EOL: "\n" >
 | < LET: "let" >
 | < IN: "in" >
@@ -60,7 +68,6 @@ Exp Start() :
 {
    e = logic() <EOL>  { return e; }
 }
-
 
 Exp logic():
 { Exp e1,e2; }
@@ -118,4 +125,9 @@ Exp Fact() :
  | <FALSE> { return new ASTBool(false); }
  | <MINUS> e = Term() { return new ASTSub(new ASTInt(0),e); }
  | <LPAR> e = Expr() <RPAR> { return e; }
+ | <NEW> e = Expr() { return new ASTNew(e); }
+ | <ASSIGN> e = Expr() { return new ASTAssign(e, e); }
+ | <SEMICOLON> e = Expr() { return new ASTSequence(e, e); }
+ | <WHILE> e = Expr() <DO> e = Expr() <END> { return new ASTWhile(e, e); }
+ | <UNIT> { return new ASTUnit(); }
 }

@@ -241,6 +241,11 @@ public class Interpreter implements ast.Exp.Visitor<Value> {
 		}
 	}
 
+	@Override
+	public Value visit(ASTNew astNew) {
+		return null;
+	}
+
 
 	public static Value interpret(Exp e) {
 		Interpreter i = new Interpreter();

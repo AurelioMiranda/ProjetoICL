@@ -1,65 +1,15 @@
 package typechecker;
 
 import ast.*;
+import interpreter.Interpreter;
 import types.*;
+import values.Value;
 
-public class Typechecker {  //TODO: visitor
+public class Typechecker implements Exp.Visitor<Type> {  //TODO: visitor
 
     public static Type typeCheck(Exp e) {
-        if (e instanceof ASTInt) {
-            return IntType.getIntType();
-        } else if (e instanceof ASTBool) {
-            return BoolType.getBoolType();
-        } else if (e instanceof ASTAdd) {
-            Exp arg2 = ((ASTAdd) e).arg2;
-            Exp arg1 = ((ASTAdd) e).arg1;
-            return getNumType(arg2, arg1);
-        } else if (e instanceof ASTAnd) {
-            Exp arg2 = ((ASTAnd) e).e1;
-            Exp arg1 = ((ASTAnd) e).e2;
-            return getBoolType(arg2, arg1);
-        } else if (e instanceof ASTDiv) {
-            Exp arg2 = ((ASTDiv) e).arg2;
-            Exp arg1 = ((ASTDiv) e).arg1;
-            return getNumType(arg2, arg1);
-        } else if (e instanceof ASTEq) {
-            Exp arg2 = ((ASTEq) e).e1;
-            Exp arg1 = ((ASTEq) e).e2;
-            return getEqType(arg2, arg1);
-        } else if (e instanceof ASTGr) {
-            Exp arg2 = ((ASTGr) e).e1;
-            Exp arg1 = ((ASTGr) e).e2;
-            return getIntBoolType(arg2, arg1);
-        } else if (e instanceof ASTGrOrEq) {
-            Exp arg2 = ((ASTGrOrEq) e).e1;
-            Exp arg1 = ((ASTGrOrEq) e).e2;
-            return getIntBoolType(arg2, arg1);
-        } else if (e instanceof ASTLt) {
-            Exp arg2 = ((ASTLt) e).e1;
-            Exp arg1 = ((ASTLt) e).e2;
-            return getIntBoolType(arg2, arg1);
-        } else if (e instanceof ASTLTOrEq) {
-            Exp arg2 = ((ASTLTOrEq) e).e1;
-            Exp arg1 = ((ASTLTOrEq) e).e2;
-            return getIntBoolType(arg2, arg1);
-        } else if (e instanceof ASTMult) {
-            Exp arg2 = ((ASTMult) e).arg2;
-            Exp arg1 = ((ASTMult) e).arg1;
-            return getNumType(arg2, arg1);
-        } else if (e instanceof ASTNEq) {
-            Exp arg2 = ((ASTNEq) e).e1;
-            Exp arg1 = ((ASTNEq) e).e2;
-            return getEqType(arg2, arg1);
-        } else if (e instanceof ASTOr) {
-            Exp arg2 = ((ASTOr) e).e1;
-            Exp arg1 = ((ASTOr) e).e2;
-            return getBoolType(arg2, arg1);
-        } else if (e instanceof ASTSub) {
-            Exp arg2 = ((ASTSub) e).arg2;
-            Exp arg1 = ((ASTSub) e).arg1;
-            return getNumType(arg2, arg1);
-        }
-        return NoneType.getNoneType();
+        Typechecker t = new Typechecker();
+        return e.accept(t);
     }
 
     private static Type getIntBoolType(Exp arg2, Exp arg1) {
@@ -95,11 +45,96 @@ public class Typechecker {  //TODO: visitor
     private static Type getEqType(Exp arg2, Exp arg1) {
         Type arg1Type = typeCheck(arg1);
         Type arg2Type = typeCheck(arg2);
-        if (arg1Type instanceof IntType && arg2Type instanceof IntType
-                || arg1Type instanceof BoolType && arg2Type instanceof BoolType) {
+        if ((arg1Type instanceof IntType && arg2Type instanceof IntType)
+                || (arg1Type instanceof BoolType && arg2Type instanceof BoolType)) {
             return BoolType.getBoolType();
         } else {
             return NoneType.getNoneType();
         }
+    }
+
+    @Override
+    public Type visit(ASTAdd i) {
+        return getNumType(i.arg1, i.arg2);
+    }
+
+    @Override
+    public Type visit(ASTDiv i) {
+        return getNumType(i.arg1, i.arg2);
+    }
+
+    @Override
+    public Type visit(ASTInt i) {
+        return IntType.getIntType();
+    }
+
+    @Override
+    public Type visit(ASTMult e) {
+        return getNumType(e.arg1, e.arg2);
+    }
+
+    @Override
+    public Type visit(ASTSub e) {
+        return getNumType(e.arg1, e.arg2);
+    }
+
+    @Override
+    public Type visit(ASTEq astEq) {
+        return getEqType(astEq.e1, astEq.e2);
+    }
+
+    @Override
+    public Type visit(ASTAnd astAnd) {
+        return getBoolType(astAnd.e1, astAnd.e2);
+    }
+
+    @Override
+    public Type visit(ASTOr astOr) {
+        return getBoolType(astOr.e1, astOr.e2);
+    }
+
+    @Override
+    public Type visit(ASTGr astGr) {
+        return getIntBoolType(astGr.e1, astGr.e2);
+    }
+
+    @Override
+    public Type visit(ASTLt astLt) {
+        return getIntBoolType(astLt.e1, astLt.e2);
+    }
+
+    @Override
+    public Type visit(ASTGrOrEq astGrOrEq) {
+        return getIntBoolType(astGrOrEq.e1, astGrOrEq.e2);
+    }
+
+    @Override
+    public Type visit(ASTLTOrEq astltOrEq) {
+        return getIntBoolType(astltOrEq.e1, astltOrEq.e2);
+    }
+
+    @Override
+    public Type visit(ASTNEq astneq) {
+        return getEqType(astneq.e1, astneq.e2);
+    }
+
+    @Override
+    public Type visit(ASTBool astbool) {
+        return BoolType.getBoolType();
+    }
+
+    @Override
+    public Type visit(ASTNeg astNeg) {
+        return IntType.getIntType();
+    }
+
+    @Override
+    public Type visit(ASTIdentifier astIdentifier) { //TODO: identifiers
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTNew astNew) { //TODO: references
+        return null;
     }
 }

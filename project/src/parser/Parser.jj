@@ -19,6 +19,7 @@ SKIP :
 | "\t"
 | "\r"
 }
+
 TOKEN : /* OPERATORS */
 {
   < Num: (["0"-"9"]) + >
@@ -42,6 +43,13 @@ TOKEN : /* OPERATORS */
 | < OR : "||" >
 | < IFQ : "?" >
 | < COLON : ":" >
+| < SEMICOLON : ";" >
+| < WHILE : "while" >
+| < DO : "do" >
+| < END : "end" >
+| < NEW : "new" >
+| < ASSIGN : ":=" >
+| < UNIT : "()" >
 | < EOL: "\n" >
 | < LET: "let" >
 | < IN: "in" >
@@ -60,7 +68,6 @@ Exp Start() :
 {
    e = logic() <EOL>  { return e; }
 }
-
 
 Exp logic():
 { Exp e1,e2; }
