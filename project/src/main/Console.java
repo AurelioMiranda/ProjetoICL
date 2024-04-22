@@ -20,9 +20,9 @@ public class Console {
         while (true) {
             try {
                 Exp e = parser.Start();
-                Type t = Typechecker.typeCheck(e);
+                Type t = Typechecker.typeCheck(e, new Env<>());
                 System.out.println("Type: " + t);
-                if (true) {
+                if (!t.toString().equals("None")) {
                     Value v = Interpreter.interpret(e, new Env<>());
                     System.out.println("Result: " + v);
                 } else {

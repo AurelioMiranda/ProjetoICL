@@ -8,17 +8,20 @@ import ast.arithmetic.ASTSub;
 import ast.logical.*;
 import interpreter.Env;
 import types.*;
+import values.Value;
 
 public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same Env as interpreter?
+    private static Env<Type> env;
 
-    public static Type typeCheck(Exp e) {
+    public static Type typeCheck(Exp e, Env<Type> env) {
         Typechecker t = new Typechecker();
+        Typechecker.env = env;
         return e.accept(t);
     }
 
     private static Type getIntBoolType(Exp arg2, Exp arg1) {
-        Type arg1Type = typeCheck(arg1);
-        Type arg2Type = typeCheck(arg2);
+        Type arg1Type = typeCheck(arg1, env);
+        Type arg2Type = typeCheck(arg2, env);
         if (arg1Type instanceof IntType && arg2Type instanceof IntType) {
             return BoolType.getBoolType();
         } else {
@@ -27,8 +30,8 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
     }
 
     private static Type getBoolType(Exp arg2, Exp arg1) {
-        Type arg1Type = typeCheck(arg1);
-        Type arg2Type = typeCheck(arg2);
+        Type arg1Type = typeCheck(arg1, env);
+        Type arg2Type = typeCheck(arg2, env);
         if (arg1Type instanceof BoolType && arg2Type instanceof BoolType) {
             return BoolType.getBoolType();
         } else {
@@ -37,8 +40,8 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
     }
 
     private static Type getNumType(Exp arg2, Exp arg1) {
-        Type arg1Type = typeCheck(arg1);
-        Type arg2Type = typeCheck(arg2);
+        Type arg1Type = typeCheck(arg1, env);
+        Type arg2Type = typeCheck(arg2, env);
         if (arg1Type instanceof IntType && arg2Type instanceof IntType) {
             return IntType.getIntType();
         } else {
@@ -47,8 +50,8 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
     }
 
     private static Type getEqType(Exp arg2, Exp arg1) {
-        Type arg1Type = typeCheck(arg1);
-        Type arg2Type = typeCheck(arg2);
+        Type arg1Type = typeCheck(arg1, env);
+        Type arg2Type = typeCheck(arg2, env);
         if ((arg1Type instanceof IntType && arg2Type instanceof IntType)
                 || (arg1Type instanceof BoolType && arg2Type instanceof BoolType)) {
             return BoolType.getBoolType();
@@ -129,7 +132,7 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
 
     @Override
     public Type visit(ASTNeg astNeg) {
-        Type t = typeCheck(astNeg.e);
+        Type t = typeCheck(astNeg.e, env);
         if (t instanceof BoolType) {
             return BoolType.getBoolType();
         }
@@ -138,7 +141,7 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
 
     @Override
     public Type visit(ASTIdentifier astIdentifier) { //TODO: identifiers
-        return null;
+        return env.find(astIdentifier.getName());
     }
 
     @Override
@@ -148,7 +151,11 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
 
     @Override
     public Type visit(ASTLet astLet) { //TODO: identifiers
-
-        return null;
+        Type t1 = typeCheck(astLet.variableValue, env);
+        env = env.beginScope();
+        env.bind(astLet.variableName, t1);
+        Type t = typeCheck(astLet.body, env);
+        env = env.endScope();
+        return t;
     }
 }
