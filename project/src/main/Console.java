@@ -22,8 +22,8 @@ public class Console {
                 Exp e = parser.Start();
                 Type t = Typechecker.typeCheck(e);
                 System.out.println("Type: " + t);
-                if (!t.toString().equals("None")) {
-                    Value v = Interpreter.interpret(e);
+                if (true) {
+                    Value v = Interpreter.interpret(e, new Env<>());
                     System.out.println("Result: " + v);
                 } else {
                     System.out.println("Non computable.");

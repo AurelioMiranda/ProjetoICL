@@ -5,7 +5,7 @@ options {
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;
+import ast.*;import ast.arithmetic.ASTAdd;import ast.arithmetic.ASTDiv;import ast.arithmetic.ASTMult;import ast.arithmetic.ASTSub;import ast.logical.*;
 
 public class Parser {
 
@@ -66,7 +66,14 @@ TOKEN :
 Exp Start() :
 { Exp e; }
 {
-   e = logic() <EOL>  { return e; }
+   e = decl() <EOL>  { return e; }
+}
+
+Exp decl() :
+{ Exp e,b; Token x; }
+{
+  <LET> x = < ID > < EQ > e = decl() <IN > b = decl() { return new ASTLet(x.image, e, b); }
+|  e = logic() { return e; }
 }
 
 Exp logic():
@@ -124,10 +131,7 @@ Exp Fact() :
  | <TRUE> { return new ASTBool(true); }
  | <FALSE> { return new ASTBool(false); }
  | <MINUS> e = Term() { return new ASTSub(new ASTInt(0),e); }
- | <LPAR> e = Expr() <RPAR> { return e; }
- | <NEW> e = Expr() { return new ASTNew(e); }
- | <ASSIGN> e = Expr() { return new ASTAssign(e, e); }
- | <SEMICOLON> e = Expr() { return new ASTSequence(e, e); }
- | <WHILE> e = Expr() <DO> e = Expr() <END> { return new ASTWhile(e, e); }
- | <UNIT> { return new ASTUnit(); }
+ | <NEG> e = Fact() { return new ASTNeg(e); }
+ | <LPAR> e = logic() <RPAR> { return e; }
+ | x = <ID> { return new ASTIdentifier(x.image); }
 }

@@ -1,6 +1,8 @@
-package ast;
+package ast.arithmetic;
 
 
+import ast.Exp;
+import interpreter.Env;
 
 public class ASTDiv implements ast.Exp {
 	public Exp arg1;
@@ -10,9 +12,9 @@ public class ASTDiv implements ast.Exp {
 		this.arg1 = arg1;
 		this.arg2 = arg2;
 	}
-	
+
 	@Override
-	public <T> T accept(Visitor<T> v) {
+	public <T> T accept(Visitor<T, Env<T>> v) {
 		return v.visit(this);
 	}
 }

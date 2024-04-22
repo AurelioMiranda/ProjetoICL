@@ -53,19 +53,33 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int COLON = 24;
   /** RegularExpression Id. */
-  int EOL = 25;
+  int SEMICOLON = 25;
   /** RegularExpression Id. */
-  int LET = 26;
+  int WHILE = 26;
   /** RegularExpression Id. */
-  int IN = 27;
+  int DO = 27;
   /** RegularExpression Id. */
-  int INT = 28;
+  int END = 28;
   /** RegularExpression Id. */
-  int DIGIT = 29;
+  int NEW = 29;
   /** RegularExpression Id. */
-  int ID = 30;
+  int ASSIGN = 30;
   /** RegularExpression Id. */
-  int LETTER = 31;
+  int UNIT = 31;
+  /** RegularExpression Id. */
+  int EOL = 32;
+  /** RegularExpression Id. */
+  int LET = 33;
+  /** RegularExpression Id. */
+  int IN = 34;
+  /** RegularExpression Id. */
+  int INT = 35;
+  /** RegularExpression Id. */
+  int DIGIT = 36;
+  /** RegularExpression Id. */
+  int ID = 37;
+  /** RegularExpression Id. */
+  int LETTER = 38;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -97,6 +111,13 @@ public interface ParserConstants {
     "\"||\"",
     "\"?\"",
     "\":\"",
+    "\";\"",
+    "\"while\"",
+    "\"do\"",
+    "\"end\"",
+    "\"new\"",
+    "\":=\"",
+    "\"()\"",
     "\"\\n\"",
     "\"let\"",
     "\"in\"",

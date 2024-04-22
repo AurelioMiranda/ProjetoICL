@@ -1,5 +1,7 @@
 package ast;
 
+import interpreter.Env;
+
 public class ASTBool implements ast.Exp {
     public boolean value;
 
@@ -8,7 +10,7 @@ public class ASTBool implements ast.Exp {
     }
 
     @Override
-    public <T> T accept(Exp.Visitor<T> v) {
+    public <T> T accept(Visitor<T, Env<T>> v) {
         return v.visit(this);
     }
 }

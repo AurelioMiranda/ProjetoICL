@@ -1,4 +1,7 @@
-package ast;
+package ast.logical;
+
+import ast.Exp;
+import interpreter.Env;
 
 public class ASTGrOrEq implements ast.Exp{
     public Exp e1;
@@ -10,7 +13,7 @@ public class ASTGrOrEq implements ast.Exp{
     }
 
     @Override
-    public <T> T accept(Visitor<T> v) {
+    public <T> T accept(Visitor<T, Env<T>> v) {
         return v.visit(this);
     }
 }

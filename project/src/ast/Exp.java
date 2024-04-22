@@ -1,8 +1,15 @@
 package ast;
 
 
+import ast.arithmetic.ASTAdd;
+import ast.arithmetic.ASTDiv;
+import ast.arithmetic.ASTMult;
+import ast.arithmetic.ASTSub;
+import ast.logical.*;
+import interpreter.Env;
+
 public interface Exp {
-    public interface Visitor<T> {
+    public interface Visitor<T, E> {
         T visit(ASTAdd i);
 
         T visit(ASTDiv i);
@@ -36,9 +43,11 @@ public interface Exp {
         T visit(ASTIdentifier astIdentifier);
 
         T visit(ASTNew astNew);
+
+        T visit(ASTLet astLet);
     }
 
-    <T> T accept(Visitor<T> v);
+    <T> T accept(Visitor<T, Env<T>> v);
 
 }
 

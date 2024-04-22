@@ -1,6 +1,8 @@
 package ast;
 
-public class ASTIdentifier implements ast.Exp {
+import interpreter.Env;
+
+public class ASTIdentifier implements ast.Exp { //TODO: dont think this is correct, identifier maybe has just a name?
     private String name;
     private Integer number; // Allow for representing numbers as identifiers
 
@@ -34,7 +36,7 @@ public class ASTIdentifier implements ast.Exp {
     }
 
     @Override
-    public <T> T accept(Visitor<T> v) {
+    public <T> T accept(Visitor<T, Env<T>> v) {
         return v.visit(this);
     }
 

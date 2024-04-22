@@ -1,6 +1,9 @@
-package ast;
+package ast.logical;
 
-public class ASTEq implements Exp{
+import ast.Exp;
+import interpreter.Env;
+
+public class ASTEq implements Exp {
     public Exp e1;
     public Exp e2;
 
@@ -10,7 +13,7 @@ public class ASTEq implements Exp{
     }
 
     @Override
-    public <T> T accept(Visitor<T> v) {
+    public <T> T accept(Visitor<T, Env<T>> v) {
         return v.visit(this);
     }
 }

@@ -1,5 +1,7 @@
 package ast;
 
+import interpreter.Env;
+
 public class ASTInt implements ast.Exp  { //TODO: Minus has conflicts (-3)*6
     public int value;
 
@@ -8,7 +10,7 @@ public class ASTInt implements ast.Exp  { //TODO: Minus has conflicts (-3)*6
     }
 
     @Override
-    public <T> T accept(Visitor<T> v) {
+    public <T> T accept(Visitor<T, Env<T>> v) {
         return v.visit(this);
     }
 }

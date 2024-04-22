@@ -6,10 +6,16 @@ import java.io.PrintStream;
 
 
 import ast.*;
+import ast.arithmetic.ASTAdd;
+import ast.arithmetic.ASTDiv;
+import ast.arithmetic.ASTMult;
+import ast.arithmetic.ASTSub;
+import ast.logical.*;
+import interpreter.Env;
 import target.*;
 
 
-public class CodeGen implements ast.Exp.Visitor<Void> {
+public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	
 	BasicBlock block = new BasicBlock();
 	
@@ -91,6 +97,11 @@ public class CodeGen implements ast.Exp.Visitor<Void> {
 
 	@Override
 	public Void visit(ASTNew astNew) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTLet astLet) {
 		return null;
 	}
 

@@ -1,11 +1,15 @@
 package typechecker;
 
 import ast.*;
-import interpreter.Interpreter;
+import ast.arithmetic.ASTAdd;
+import ast.arithmetic.ASTDiv;
+import ast.arithmetic.ASTMult;
+import ast.arithmetic.ASTSub;
+import ast.logical.*;
+import interpreter.Env;
 import types.*;
-import values.Value;
 
-public class Typechecker implements Exp.Visitor<Type> {  //TODO: visitor
+public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same Env as interpreter?
 
     public static Type typeCheck(Exp e) {
         Typechecker t = new Typechecker();
@@ -125,7 +129,11 @@ public class Typechecker implements Exp.Visitor<Type> {  //TODO: visitor
 
     @Override
     public Type visit(ASTNeg astNeg) {
-        return IntType.getIntType();
+        Type t = typeCheck(astNeg.e);
+        if (t instanceof BoolType) {
+            return BoolType.getBoolType();
+        }
+        return NoneType.getNoneType();
     }
 
     @Override
@@ -135,6 +143,12 @@ public class Typechecker implements Exp.Visitor<Type> {  //TODO: visitor
 
     @Override
     public Type visit(ASTNew astNew) { //TODO: references
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTLet astLet) { //TODO: identifiers
+
         return null;
     }
 }

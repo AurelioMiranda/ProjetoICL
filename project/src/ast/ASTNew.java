@@ -1,5 +1,7 @@
 package ast;
 
+import interpreter.Env;
+
 public class ASTNew implements Exp {
     private Exp expression; // Expression representing the value to be stored
 
@@ -17,7 +19,7 @@ public class ASTNew implements Exp {
     }
 
     @Override
-    public <T> T accept(Visitor<T> v) {
+    public <T> T accept(Visitor<T, Env<T>> v) {
         return v.visit(this);
     }
 }

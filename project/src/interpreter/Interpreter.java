@@ -1,12 +1,18 @@
 package interpreter;
 
 import ast.*;
+import ast.arithmetic.ASTAdd;
+import ast.arithmetic.ASTDiv;
+import ast.arithmetic.ASTMult;
+import ast.arithmetic.ASTSub;
+import ast.logical.*;
 import values.BoolValue;
 import values.IntValue;
 import values.Value;
 
 
-public class Interpreter implements ast.Exp.Visitor<Value> {
+public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
+	private static Env<Value> env;
 
 	@Override
 	public Value visit(ASTInt i) {
@@ -20,7 +26,11 @@ public class Interpreter implements ast.Exp.Visitor<Value> {
 
 	@Override
 	public Value visit(ASTNeg astNeg) {
-		return new BoolValue(!astNeg.value);
+		Value v = astNeg.e.accept(this);
+		if (v instanceof BoolValue v1) {
+			return new BoolValue(!v1.getValue());
+		}
+		throw new ArithmeticException();
 	}
 
 	@Override
@@ -218,27 +228,15 @@ public class Interpreter implements ast.Exp.Visitor<Value> {
 		throw new ArithmeticException();
 	}
 
-	@Override
+
 	public Value visit(ASTIdentifier e) {
-		if (e.isStringIdentifier()) {
-			String identifierName = e.getName();
-                        /*
-                                ver na hashtable mais proxima se nao der ver na acima,..., and so on
-                        // Check if the identifier exists in the environment
-                        if (environment.containsKey(identifierName)) {
-                                return environment.get(identifierName);
-                        } else {
-                                throw new IllegalArgumentException("Undefined identifier: " + identifierName);
-                        }
-                         */
-			return null;
+		Value v = (Value) env.find(e.getName());
+		if (v instanceof IntValue v1){
+			return new IntValue(((IntValue) v).getValue());
+		} else if (v instanceof BoolValue v1){
+			return new BoolValue(((BoolValue) v).getValue());
 		}
-		else if (e.isNumberIdentifier()) {
-			Integer identifierNumber = e.getNumber();
-			return new IntValue(identifierNumber);
-		} else {
-			throw new IllegalArgumentException("Invalid identifier");
-		}
+		throw new ArithmeticException();
 	}
 
 	@Override
@@ -246,10 +244,20 @@ public class Interpreter implements ast.Exp.Visitor<Value> {
 		return null;
 	}
 
+	@Override
+	public Value visit(ASTLet astLet) {
+		Value v1 = interpret(astLet.variableValue, env);
+		env = env.beginScope();
+		env.bind(astLet.variableName, v1);
+		Value val = interpret(astLet.body, env);
+		env = env.endScope();
+		return val;
+	}
 
-	public static Value interpret(Exp e) {
+
+	public static Value interpret(Exp e, Env<Value> env) {
 		Interpreter i = new Interpreter();
+		Interpreter.env = env;
 		return e.accept(i);
-
 	}
 }

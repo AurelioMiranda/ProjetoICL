@@ -1,4 +1,7 @@
-package ast;
+package ast.arithmetic;
+
+import ast.Exp;
+import interpreter.Env;
 
 public class ASTAdd implements ast.Exp  {
     public Exp arg1;
@@ -10,7 +13,7 @@ public class ASTAdd implements ast.Exp  {
     }
 
     @Override
-    public <T> T accept(Exp.Visitor<T> v) {
+    public <T> T accept(Visitor<T, Env<T>> v) {
         return v.visit(this);
     }
 }
