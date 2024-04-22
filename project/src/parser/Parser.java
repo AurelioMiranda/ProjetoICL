@@ -238,7 +238,7 @@ public class Parser implements ParserConstants {
       break;
     case MINUS:
       jj_consume_token(MINUS);
-      e = Term();
+      e = Fact();
                         {if (true) return new ASTSub(new ASTInt(0),e);}
       break;
     case NEG:

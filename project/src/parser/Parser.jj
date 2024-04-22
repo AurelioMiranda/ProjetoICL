@@ -130,7 +130,7 @@ Exp Fact() :
  }
  | <TRUE> { return new ASTBool(true); }
  | <FALSE> { return new ASTBool(false); }
- | <MINUS> e = Term() { return new ASTSub(new ASTInt(0),e); }
+ | <MINUS> e = Fact() { return new ASTSub(new ASTInt(0),e); }
  | <NEG> e = Fact() { return new ASTNeg(e); }
  | <LPAR> e = logic() <RPAR> { return e; }
  | x = <ID> { return new ASTIdentifier(x.image); }
