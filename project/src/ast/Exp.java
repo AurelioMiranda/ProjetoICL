@@ -5,6 +5,11 @@ import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
 import ast.arithmetic.ASTMult;
 import ast.arithmetic.ASTSub;
+import ast.control_flow.ASTElse;
+import ast.control_flow.ASTIf;
+import ast.control_flow.ASTWhile;
+import ast.identifiers.ASTIdentifier;
+import ast.identifiers.ASTLet;
 import ast.logical.*;
 import interpreter.Env;
 
@@ -45,6 +50,12 @@ public interface Exp {
         T visit(ASTNew astNew);
 
         T visit(ASTLet astLet);
+
+        T visit(ASTIf astIf);
+
+        T visit(ASTElse astElse);
+
+        T visit(ASTWhile astWhile);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

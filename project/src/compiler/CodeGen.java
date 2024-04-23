@@ -10,6 +10,11 @@ import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
 import ast.arithmetic.ASTMult;
 import ast.arithmetic.ASTSub;
+import ast.control_flow.ASTElse;
+import ast.control_flow.ASTIf;
+import ast.control_flow.ASTWhile;
+import ast.identifiers.ASTIdentifier;
+import ast.identifiers.ASTLet;
 import ast.logical.*;
 import interpreter.Env;
 import target.*;
@@ -102,6 +107,21 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTLet astLet) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTIf astIf) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTElse astElse) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTWhile astWhile) {
 		return null;
 	}
 

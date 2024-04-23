@@ -5,10 +5,14 @@ import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
 import ast.arithmetic.ASTMult;
 import ast.arithmetic.ASTSub;
+import ast.control_flow.ASTElse;
+import ast.control_flow.ASTIf;
+import ast.control_flow.ASTWhile;
+import ast.identifiers.ASTIdentifier;
+import ast.identifiers.ASTLet;
 import ast.logical.*;
 import interpreter.Env;
 import types.*;
-import values.Value;
 
 public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same Env as interpreter?
     private static Env<Type> env;
@@ -157,5 +161,28 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
         Type t = typeCheck(astLet.body, env);
         env = env.endScope();
         return t;
+    }
+
+    @Override
+    public Type visit(ASTIf astIf) {
+        Type cond = typeCheck(astIf.condition, env);
+        if (cond instanceof BoolType){
+            return typeCheck(astIf.body, env);
+        }
+        return NoneType.getNoneType();
+    }
+
+    @Override
+    public Type visit(ASTElse astElse) {
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTWhile astWhile) {
+        Type cond = typeCheck(astWhile.condition, env);
+        if (cond instanceof BoolType){
+            return typeCheck(astWhile.body, env);
+        }
+        return NoneType.getNoneType();
     }
 }

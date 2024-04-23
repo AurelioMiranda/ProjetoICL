@@ -73,13 +73,19 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int IN = 34;
   /** RegularExpression Id. */
-  int INT = 35;
+  int IF = 35;
   /** RegularExpression Id. */
-  int DIGIT = 36;
+  int THEN = 36;
   /** RegularExpression Id. */
-  int ID = 37;
+  int ELSE = 37;
   /** RegularExpression Id. */
-  int LETTER = 38;
+  int INT = 38;
+  /** RegularExpression Id. */
+  int DIGIT = 39;
+  /** RegularExpression Id. */
+  int ID = 40;
+  /** RegularExpression Id. */
+  int LETTER = 41;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -121,6 +127,9 @@ public interface ParserConstants {
     "\"\\n\"",
     "\"let\"",
     "\"in\"",
+    "\"if\"",
+    "\"then\"",
+    "\"else\"",
     "<INT>",
     "<DIGIT>",
     "<ID>",

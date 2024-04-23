@@ -5,6 +5,11 @@ import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
 import ast.arithmetic.ASTMult;
 import ast.arithmetic.ASTSub;
+import ast.control_flow.ASTElse;
+import ast.control_flow.ASTIf;
+import ast.control_flow.ASTWhile;
+import ast.identifiers.ASTIdentifier;
+import ast.identifiers.ASTLet;
 import ast.logical.*;
 import values.BoolValue;
 import values.IntValue;
@@ -252,6 +257,35 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 		Value val = interpret(astLet.body, env);
 		env = env.endScope();
 		return val;
+	}
+
+	@Override
+	public Value visit(ASTIf astIf) {
+		Value cond = interpret(astIf.condition, env);
+		if (cond instanceof BoolValue v1){
+			if (v1.getValue()){
+				return interpret(astIf.body, env);
+			}
+			return new IntValue(2);
+		}
+		throw new ArithmeticException();
+	}
+
+	@Override
+	public Value visit(ASTElse astElse) {
+		return null;
+	}
+
+	@Override
+	public Value visit(ASTWhile astWhile) { //TODO: while needs memory to work
+		Value cond = interpret(astWhile.condition, env);
+		if (cond instanceof BoolValue v1){
+			if (v1.getValue()){
+				return interpret(new ASTWhile(astWhile.condition, astWhile.body), env);
+			}
+			return new IntValue(2);
+		}
+		throw new ArithmeticException();
 	}
 
 

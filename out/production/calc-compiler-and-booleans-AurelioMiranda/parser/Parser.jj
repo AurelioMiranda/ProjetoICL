@@ -5,7 +5,7 @@ options {
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;import ast.arithmetic.ASTAdd;import ast.arithmetic.ASTDiv;import ast.arithmetic.ASTMult;import ast.arithmetic.ASTSub;import ast.logical.*;
+import ast.*;import ast.arithmetic.ASTAdd;import ast.arithmetic.ASTDiv;import ast.arithmetic.ASTMult;import ast.arithmetic.ASTSub;import ast.control_flow.ASTIf;import ast.control_flow.ASTWhile;import ast.identifiers.ASTIdentifier;import ast.identifiers.ASTLet;import ast.logical.*;
 
 public class Parser {
 
@@ -53,6 +53,9 @@ TOKEN : /* OPERATORS */
 | < EOL: "\n" >
 | < LET: "let" >
 | < IN: "in" >
+| < IF: "if" >
+| < THEN: "then" >
+| < ELSE: "else" >
 }
 
 TOKEN :
@@ -73,7 +76,15 @@ Exp decl() :
 { Exp e,b; Token x; }
 {
   <LET> x = < ID > < EQ > e = decl() <IN > b = decl() { return new ASTLet(x.image, e, b); }
-|  e = logic() { return e; }
+|  e = control_flow() { return e; }
+}
+
+Exp control_flow() :
+{ Exp e,b; }
+{
+  <IF> e = decl() <THEN> b = decl() { return new ASTIf(e, b); }
+  | <WHILE> e = decl() <DO> b = decl() { return new ASTWhile(e, b); }
+  |  e = logic() { return e; }
 }
 
 Exp logic():

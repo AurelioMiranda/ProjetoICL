@@ -38,22 +38,46 @@ public class ParserTester {
 	}
 	
 	@Test
-	public void testsLabClass01() throws Exception {
+	public void testsArithmetic() throws Exception {
 		testCase("-1\n");
 		testCase("-1*3\n");
+		testCase("2*2\n");
+		testCase("9/3\n");
+		testCase("-1-3\n");
+	}
+
+	@Test
+	public void testsLogical() throws Exception {
 		testCase("true\n");
 		testCase("false\n");
 		testCase("11 < 22\n");
 		testCase("11 > 22\n");
-		testCase("11 == 22\n");
-		testCase("3*5 != 1+2 == true\n");
-		testCase("1 == 2 && 3 == 4\n");
-		testCase("1 == 2 || 3 == 4 && xpto \n");
-		testCase("!(1 == 2) && xpto \n");
+		testCase("11 = 22\n");
+		testCase("3*5 != 1+2 = true\n");
+		testCase("1 = 2 && 3 = 4\n");
 		testNegativeCase("< 11\n");
 		testNegativeCase("11 >\n");
 		testNegativeCase("<= 11\n");
 		testNegativeCase("&& A\n");
+	}
+
+	@Test
+	public void testsIdentifiers() throws Exception {
+		testCase("let x = 9 in x + 2 \n");
+		testCase("let x = true in x = true \n");
+		testCase("let x = 9 in x = 9 \n");
+		testCase("let x = 9 in let y = 7 in x + y \n");
+		testCase("let x = 9 in let y = 7 in let z = 5 in z + x + y \n");
+	}
+
+	@Test
+	public void testControlFlow() throws Exception {
+		testCase("if ~false then 2<5 \n");
+		testCase("if 2<5 then true&&~false \n");
+		testCase("if true then 2+2 \n");
+		testCase("let x = true in if x then x && true \n");
+		testCase("if 2<5&&true then let x = 9 in 5 + x \n");
+		testCase("let x = 9 in if x != 8 then x + 1 \n");
 	}
 }
 
