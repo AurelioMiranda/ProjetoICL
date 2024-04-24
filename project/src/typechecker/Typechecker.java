@@ -174,7 +174,16 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
 
     @Override
     public Type visit(ASTElse astElse) {
-        return null;
+        Type cond = typeCheck(astElse.condition, env);
+        if (cond instanceof BoolType){
+            Type ifBody = typeCheck(astElse.ifBody, env);
+            Type elseBody = typeCheck(astElse.elseBody, env);
+            if (ifBody == elseBody){
+                return ifBody;
+            }
+            return UnitType.getUnitType();
+        }
+        return NoneType.getNoneType();
     }
 
     @Override

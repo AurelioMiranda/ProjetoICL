@@ -50,11 +50,16 @@ public class ParserTester {
 	public void testsLogical() throws Exception {
 		testCase("true\n");
 		testCase("false\n");
+		testCase("~false\n");
+		testCase("~false&&true\n");
 		testCase("11 < 22\n");
 		testCase("11 > 22\n");
+		testCase("~(11 > 22)\n");
 		testCase("11 = 22\n");
+		testCase("~(11 = 22)\n");
 		testCase("3*5 != 1+2 = true\n");
 		testCase("1 = 2 && 3 = 4\n");
+		testCase("~(1 = 2 && 3 = 4)\n");
 		testNegativeCase("< 11\n");
 		testNegativeCase("11 >\n");
 		testNegativeCase("<= 11\n");
@@ -65,6 +70,7 @@ public class ParserTester {
 	public void testsIdentifiers() throws Exception {
 		testCase("let x = 9 in x + 2 \n");
 		testCase("let x = true in x = true \n");
+		testCase("let x = true in ~(x = true)||true \n");
 		testCase("let x = 9 in x = 9 \n");
 		testCase("let x = 9 in let y = 7 in x + y \n");
 		testCase("let x = 9 in let y = 7 in let z = 5 in z + x + y \n");
@@ -72,12 +78,15 @@ public class ParserTester {
 
 	@Test
 	public void testControlFlow() throws Exception {
-		testCase("if ~false then 2<5 \n");
-		testCase("if 2<5 then true&&~false \n");
-		testCase("if true then 2+2 \n");
-		testCase("let x = true in if x then x && true \n");
-		testCase("if 2<5&&true then let x = 9 in 5 + x \n");
-		testCase("let x = 9 in if x != 8 then x + 1 \n");
+		testCase("if ~false then 2<5 end \n");
+		testCase("if 2<5 then true&&~false end \n");
+		testCase("if true then 2+2 end \n");
+		testCase("let x = true in if x then x && true end \n");
+		testCase("if 2<5&&true then let x = 9 in 5 + x end \n");
+		testCase("let x = 9 in if x != 8 then x + 1 end \n");
+		testCase("if false then true else 2+2 end \n");
+		testCase("if false then 2+2 else true end \n");
+		testCase("if true then 2+2 else true end \n");
 	}
 }
 

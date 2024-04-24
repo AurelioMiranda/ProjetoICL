@@ -273,7 +273,16 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTElse astElse) {
-		return null;
+		Value cond = interpret(astElse.condition, env);
+		if (cond instanceof BoolValue v1){
+			if (v1.getValue()){
+				return interpret(astElse.ifBody, env);
+			} else if (!v1.getValue()){
+				return interpret(astElse.elseBody, env);
+			}
+			return new IntValue(2);
+		}
+		throw new ArithmeticException();
 	}
 
 	@Override

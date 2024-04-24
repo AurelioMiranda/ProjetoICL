@@ -5,6 +5,7 @@ import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
 import ast.arithmetic.ASTMult;
 import ast.arithmetic.ASTSub;
+import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
 import ast.identifiers.ASTIdentifier;
