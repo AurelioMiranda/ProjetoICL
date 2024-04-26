@@ -3,19 +3,12 @@ package ast;
 import interpreter.Env;
 
 public class ASTNew implements Exp {
-    private Exp expression; // Expression representing the value to be stored
+    public String varName;
+    public Exp expression;
 
-    public ASTNew(Exp expression) {
+    public ASTNew(String varName, Exp expression) {
         this.expression = expression;
-    }
-
-    public Exp getExpression() {
-        return expression;
-    }
-
-    @Override
-    public String toString() {
-        return "NEW(" + expression.toString() + ")";
+        this.varName = varName;
     }
 
     @Override

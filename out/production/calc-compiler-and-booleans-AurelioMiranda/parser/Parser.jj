@@ -148,6 +148,6 @@ Exp Fact() :
  | <FALSE> { return new ASTBool(false); }
  | <MINUS> e = Fact() { return new ASTSub(new ASTInt(0),e); }
  | <NEG> e = Fact() { return new ASTNeg(e); }
- | <LPAR> e = logic() <RPAR> { return e; }
+ | <LPAR> e = decl() <RPAR> { return e; }
  | x = <ID> { return new ASTIdentifier(x.image); }
 }

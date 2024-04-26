@@ -1,35 +1,52 @@
-# Interpretation and compilation of Programming Languages 2023-24
+# MicroML Project - Progress Report
+
+This document outlines the progress made on the MicroML interpreter and compiler project.
+
+## Implemented Features
+The following grammar elements have been successfully implemented in this project phase:
+
+E ::= Num | true | false | id   
+E + E | E - E | E * E | E / E  
+-E | (E)  
+E = E | E != E | E > E | E >= E  
+E < E | E <= E  
+E && E | E || E | ~E  
+let (x(: T)? = E) + in E  
+if E then E else E end  
+if E then E end
+
+These features enable the interpreter to parse and evaluate a subset of MicroML expressions.
+
+## Features Not Yet Implemented
+The following functionalities are planned for future development:
+
+newE  
+E := E  
+!E  
+while E do E end  
+println E  
+print E  
+E; E  
+fun PL -> E end  
+E(EL?)  
+()
+
+Integrating these features is crucial for the interpreter's capabilities to handle a wider range of MicroML programs and will be implemented in the very near future.
+
+## Testing the Program
+Here's a step-by-step guide on how to test the program:
+
+1. **Build the Project**: Double-click the `build.bat` file to compile the project.
+
+2. **Prepare Test Input**: Create a file named `input.txt` and enter the MicroML expressions you want to test (one expression per line).
+
+3. **Run the Interpreter**: Navigate to the project directory using a terminal and execute the following command:
+
+   `java -classpath bin main.Console input.txt`
+
+This command launches the interpreter and processes the expressions listed in `input.txt`.
 
 
-
-
-
-## MicroML Project
-
-In this project, you will implement an interpreter and a compiler for the MicroML language, described in this document.  
-Your project must consist of two executables, one implementing the interpreter pipeline and another implementing the compiler pipeline.  
-Each pipeline must (at least) include a parser and a type-checker stage before the execution/code generation stages, using the tools and techniques described throughout the semester.  
-The language you will be implementing in this project (MicroML) is a functional and imperative programming language in the style of OCaml.  
-
-### Compiling CALC to the JVM
-
-The following is a grammar for the syntax of MicroML:  
-E ::= Num|true|false | id  
-    |    E+E | E−E | E∗E | E/E | −E | (E)                   
-    |    E=E | E!=E | E>E | E>=E | E<E | E<=E  
-    |    E&&E | E||E |˜E  
-    |    let (x(: T)? = E)+inE  
-    |    newE | E := E | !E  
-    |    if E thenE elseE end | if E thenEend  
-    |    while E doEend  
-    |    println E | printE | E;E  
-    |    funPL → Eend|E(EL?)  
-    |    ()  
-
-EL ::= E(,E)∗  
-PL ::= (id:T)+  
-T  ::= unit | int | bool | ref T | (T)∗ → T  
-
-### Project done by:
+### Project done by:  
 Aurélio Miranda - 69369  
-Francisco Silva - 
+Francisco Silva - 57824  

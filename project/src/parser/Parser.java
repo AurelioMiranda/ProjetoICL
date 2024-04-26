@@ -297,9 +297,9 @@ public class Parser implements ParserConstants {
       break;
     case LPAR:
       jj_consume_token(LPAR);
-      e = logic();
+      e = decl();
       jj_consume_token(RPAR);
-                               {if (true) return e;}
+                              {if (true) return e;}
       break;
     case ID:
       x = jj_consume_token(ID);

@@ -1,6 +1,9 @@
 package main;
 
 import java.io.ByteArrayInputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 import ast.Exp;
 
@@ -14,8 +17,22 @@ import values.Value;
 public class Console {
 
     @SuppressWarnings("static-access")
-    public static void main(String args[]) {
-        Parser parser = new Parser(System.in);
+    public static void main(String[] args) {
+        Parser parser;
+        if (args.length > 0) {
+            String filePath = args[0];
+            String code;
+            try {
+                code = readFile(filePath);
+            } catch (Exception e) {
+                System.err.println("Error: " + e.getMessage());
+                System.exit(1);
+                return;
+            }
+            parser = new Parser(new ByteArrayInputStream(code.getBytes()));
+        } else {
+            parser = new Parser(System.in);
+        }
 
         while (true) {
             try {
@@ -37,6 +54,17 @@ public class Console {
                 e.printStackTrace();
                 parser.ReInit(System.in);
             }
+        }
+    }
+
+    private static String readFile(String filePath) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            StringBuilder code = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                code.append(line).append("\n");
+            }
+            return code.toString();
         }
     }
 
