@@ -96,7 +96,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
-	public Void visit(ASTIdentifier astIdentifier) {
+	public Void visit(ASTIdentifier astIdentifier) { //TODO: teste
 		return null;
 	}
 
@@ -106,7 +106,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
-	public Void visit(ASTLet astLet) {
+	public Void visit(ASTLet astLet) { //TODO: teste
 		return null;
 	}
 

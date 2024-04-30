@@ -50,3 +50,6 @@ This command launches the interpreter and processes the expressions listed in `i
 ### Project done by:  
 Aurélio Miranda - 69369  
 Francisco Silva - 57824  
+
+### Our private Git repository:  
+`https://github.com/AurelioMiranda/ProjetoICL.git`

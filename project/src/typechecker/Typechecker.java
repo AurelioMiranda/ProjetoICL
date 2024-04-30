@@ -194,4 +194,8 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
         }
         return NoneType.getNoneType();
     }
+
+    public Type visit(ASTClosure astClosure){
+        return null;
+    }
 }

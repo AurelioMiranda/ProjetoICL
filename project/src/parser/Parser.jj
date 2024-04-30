@@ -70,6 +70,7 @@ Exp Start() :
 { Exp e; }
 {
    e = decl() <EOL>  { return e; }
+  | <EOF> { throw new ParseException("End of File encountered. Stopping Parsing."); }
 }
 
 Exp decl() :
