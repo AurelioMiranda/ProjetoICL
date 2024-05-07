@@ -87,15 +87,10 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 	@Override
 	public Value visit(ASTAnd astAnd) {
 		Value v = astAnd.e1.accept(this);
-		if (v instanceof IntValue v1){
-			v = astAnd.e2.accept(this);
-			if (v instanceof IntValue v2){
-				if (v1.getValue() >= 0 && v2.getValue() >= 0)
-					return new BoolValue(true);
+		if (v instanceof BoolValue v1){
+			if (!v1.getValue()) {
 				return new BoolValue(false);
 			}
-		}
-		if (v instanceof BoolValue v1){
 			v = astAnd.e2.accept(this);
 			if (v instanceof BoolValue v2){
 				if (v1.getValue() && v2.getValue())
@@ -109,15 +104,10 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 	@Override
 	public Value visit(ASTOr astOr) {
 		Value v = astOr.e1.accept(this);
-		if (v instanceof IntValue v1){
-			v = astOr.e2.accept(this);
-			if (v instanceof IntValue v2){
-				if (v1.getValue() >= 0 || v2.getValue() >= 0)
-					return new BoolValue(true);
-				return new BoolValue(false);
-			}
-		}
 		if (v instanceof BoolValue v1){
+			if (v1.getValue()){
+				return new BoolValue(true);
+			}
 			v = astOr.e2.accept(this);
 			if (v instanceof BoolValue v2){
 				if (v1.getValue() || v2.getValue())

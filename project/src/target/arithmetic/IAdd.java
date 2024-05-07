@@ -1,4 +1,6 @@
-package target;
+package target.arithmetic;
+
+import target.Instruction;
 
 public class IAdd extends Instruction {
 	

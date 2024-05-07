@@ -56,6 +56,8 @@ TOKEN : /* OPERATORS */
 | < IF: "if" >
 | < THEN: "then" >
 | < ELSE: "else" >
+| < FUN: "fun" >
+| < ARROW: "->" >
 }
 
 TOKEN :
@@ -74,9 +76,10 @@ Exp Start() :
 }
 
 Exp decl() :
-{ Exp e,b; Token x; }
+{ Exp e,b; Token x, t; }
 {
   <LET> x = < ID > < EQ > e = decl() <IN > b = decl() { return new ASTLet(x.image, e, b); }
+| <FUN> x = <ID> t = <COLON> <ARROW> e = decl() <IN> b = decl() { return new ASTLet(x.image, e, b); }
 |  e = control_flow() { return e; }
 }
 
