@@ -18,6 +18,13 @@ import ast.identifiers.ASTLet;
 import ast.logical.*;
 import interpreter.Env;
 import target.*;
+import target.arithmetic.IAdd;
+import target.arithmetic.IDiv;
+import target.arithmetic.IMul;
+import target.arithmetic.ISub;
+import target.compare.*;
+import target.logical.IAnd;
+import target.logical.IOr;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
@@ -31,6 +38,13 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTAdd e) {
+		e.arg1.accept(this);
+		e.arg2.accept(this);
+		block.addInstruction(new IAdd());
+		return null;
+	}
 
 	@Override
 	public Void visit(ASTMult e) {
@@ -42,51 +56,88 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTSub e) {
+		e.arg1.accept(this);
+		e.arg2.accept(this);
+		block.addInstruction(new ISub());
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTEq astEq) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTAnd astAnd) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTOr astOr) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTGr astGr) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTLt astLt) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTGrOrEq astGrOrEq) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTLTOrEq astltOrEq) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTNEq astneq) {
+	public Void visit(ASTDiv e) {
+		e.arg1.accept(this);
+		e.arg2.accept(this);
+		block.addInstruction(new IDiv());
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTBool astbool) {
+		int value = astbool.value ? 1 : 0;
+		block.addInstruction(new SIPush(value) );
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTAnd astAnd) {
+		astAnd.e1.accept(this);
+		astAnd.e2.accept(this);
+		block.addInstruction(new IAnd());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTOr astOr) {
+		astOr.e1.accept(this);
+		astOr.e2.accept(this);
+		block.addInstruction(new IOr());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTEq astEq) {
+		astEq.e1.accept(this);
+		astEq.e2.accept(this);
+		block.addInstruction(new IEq());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTGr astGr) {
+		astGr.e1.accept(this);
+		astGr.e2.accept(this);
+		block.addInstruction(new IGr());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTLt astLt) {
+		astLt.e1.accept(this);
+		astLt.e2.accept(this);
+		block.addInstruction(new ILt());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTGrOrEq astGrOrEq) {
+		astGrOrEq.e1.accept(this);
+		astGrOrEq.e2.accept(this);
+		block.addInstruction(new IGrOrEq());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTLTOrEq astltOrEq) {
+		astltOrEq.e1.accept(this);
+		astltOrEq.e2.accept(this);
+		block.addInstruction(new ILtOrEq());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTNEq astneq) {
+		astneq.e1.accept(this);
+		astneq.e2.accept(this);
+		block.addInstruction(new INEq());
 		return null;
 	}
 
@@ -96,7 +147,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
-	public Void visit(ASTIdentifier astIdentifier) { //TODO: teste
+	public Void visit(ASTIdentifier astIdentifier) {
 		return null;
 	}
 
@@ -122,19 +173,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTWhile astWhile) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTAdd e) {
-		//e.arg1().accept(this);
-		//e.arg2().accept(this);
-		//block.addInstruction(new IAdd());
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTDiv e) {
 		return null;
 	}
 	
