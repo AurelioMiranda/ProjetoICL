@@ -1,10 +1,19 @@
 package types;
 
-public class FunType implements Type {
+import ast.ASTParameter;
 
+public class FunType implements Type {
+    // TODO: args types
+    public Type parameterType;
+    public Type type;
     public static final FunType singleton = new FunType();
 
     private FunType() {}
+
+    public FunType (Type argument, Type type){
+        this.parameterType = argument;
+        this.type = type;
+    }
 
     public static FunType getFunType(){
         return singleton;

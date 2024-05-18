@@ -196,6 +196,38 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
     }
 
     public Type visit(ASTClosure astClosure){
-        return null;
+        Env<Type> env0 = env.beginScope();
+        for (int i = 0; i < astClosure.params.size(); i++){
+            env0.bind(astClosure.params.get(i).identifier, astClosure.params.get(i).type);
+        }
+        Type t1 = typeCheck(astClosure.code, env0);
+        env0.endScope();
+        if(t1 instanceof NoneType)
+            return t1;
+        else
+            return new FunType(astClosure.params.get(0).type,t1);
+    }
+
+    @Override
+    public Type visit(ASTParameter astParameter) {
+        Type idType = env.find(astParameter.identifier);
+        Type paramType = astParameter.type;
+        if (idType.equals(paramType)){
+            return idType;
+        }
+        return NoneType.getNoneType();
+    }
+
+    @Override
+    public Type visit(ASTCall astCall) {
+        Type funcType = typeCheck(astCall.identifier, env);
+        if (funcType == typeCheck(astCall.identifier, env)) { //TODO: fix (is Fun(T0,TR)))
+            Type eType = typeCheck(astCall.arguments, env);
+            if (eType != eType) { //TODO: fix (!= T0)
+                return NoneType.getNoneType();
+            }
+            return funcType;
+        }
+        return NoneType.getNoneType();
     }
 }

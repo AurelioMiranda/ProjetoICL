@@ -11,6 +11,9 @@ import interpreter.*;
 import parser.*;
 import parser.Parser;
 import typechecker.Typechecker;
+import types.BoolType;
+import types.FunType;
+import types.IntType;
 import types.Type;
 import values.Value;
 

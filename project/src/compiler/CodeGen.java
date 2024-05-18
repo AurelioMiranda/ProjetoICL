@@ -23,6 +23,9 @@ import target.arithmetic.IDiv;
 import target.arithmetic.IMul;
 import target.arithmetic.ISub;
 import target.compare.*;
+import target.control_flow.GoTo;
+import target.control_flow.Label;
+import target.control_flow.NOP;
 import target.logical.IAnd;
 import target.logical.IOr;
 
@@ -97,8 +100,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTEq astEq) {
 		astEq.e1.accept(this);
 		astEq.e2.accept(this);
-		block.addInstruction(new IEq());
-		return null;
+		block.addInstruction(new INEq());
+		return getComparisonWithLabels();
 	}
 
 	@Override
@@ -106,7 +109,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		astGr.e1.accept(this);
 		astGr.e2.accept(this);
 		block.addInstruction(new IGr());
-		return null;
+		return getComparisonWithLabels();
 	}
 
 	@Override
@@ -114,7 +117,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		astLt.e1.accept(this);
 		astLt.e2.accept(this);
 		block.addInstruction(new ILt());
-		return null;
+		return getComparisonWithLabels();
 	}
 
 	@Override
@@ -122,29 +125,41 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		astGrOrEq.e1.accept(this);
 		astGrOrEq.e2.accept(this);
 		block.addInstruction(new IGrOrEq());
-		return null;
+		return getComparisonWithLabels();
 	}
 
 	@Override
-	public Void visit(ASTLTOrEq astltOrEq) {
-		astltOrEq.e1.accept(this);
-		astltOrEq.e2.accept(this);
+	public Void visit(ASTLTOrEq astLtOrEq) {
+		astLtOrEq.e1.accept(this);
+		astLtOrEq.e2.accept(this);
 		block.addInstruction(new ILtOrEq());
-		return null;
+		return getComparisonWithLabels();
 	}
 
 	@Override
-	public Void visit(ASTNEq astneq) {
-		astneq.e1.accept(this);
-		astneq.e2.accept(this);
+	public Void visit(ASTNEq astNEq) {
+		astNEq.e1.accept(this);
+		astNEq.e2.accept(this);
 		block.addInstruction(new INEq());
-		return null;
+		return getComparisonWithLabels();
 	}
 
 	@Override
 	public Void visit(ASTNeg astNeg) {
+		astNeg.e.accept(this);
+		Label L1 = new Label();
+		Label L2 = new Label();
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(new INEq());
+		block.addInstruction(new SIPush(1));
+		block.addInstruction(new GoTo(L2));
+		block.addInstruction(L1);
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(L2);
+		block.addInstruction(new NOP());
 		return null;
 	}
+
 
 	@Override
 	public Void visit(ASTIdentifier astIdentifier) {
@@ -152,12 +167,12 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
-	public Void visit(ASTNew astNew) {
+	public Void visit(ASTLet astLet) {
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTLet astLet) { //TODO: teste
+	public Void visit(ASTNew astNew) {
 		return null;
 	}
 
@@ -175,7 +190,22 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTWhile astWhile) {
 		return null;
 	}
-	
+
+	@Override
+	public Void visit(ASTClosure astClosure) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTParameter astParameter) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTCall astCall) {
+		return null;
+	}
+
 	public static BasicBlock codeGen(Exp e) {
 		CodeGen cg = new CodeGen();
 		e.accept(cg);
@@ -211,6 +241,18 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		sb.append(footer);
 		return sb;
 			
+	}
+
+	private Void getComparisonWithLabels() {
+		Label L1 = new Label();
+		Label L2 = new Label();
+		block.addInstruction(new SIPush(1));
+		block.addInstruction(new GoTo(L2));
+		block.addInstruction(L1);
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(L2);
+		block.addInstruction(new NOP());
+		return null;
 	}
 	
 	public static void writeToFile(Exp e, String filename) throws FileNotFoundException {

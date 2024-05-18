@@ -5,7 +5,7 @@ options {
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;import ast.arithmetic.ASTAdd;import ast.arithmetic.ASTDiv;import ast.arithmetic.ASTMult;import ast.arithmetic.ASTSub;import ast.control_flow.ASTElse;import ast.control_flow.ASTIf;import ast.control_flow.ASTWhile;import ast.identifiers.ASTIdentifier;import ast.identifiers.ASTLet;import ast.logical.*;
+import ast.*;import ast.arithmetic.ASTAdd;import ast.arithmetic.ASTDiv;import ast.arithmetic.ASTMult;import ast.arithmetic.ASTSub;import ast.control_flow.ASTElse;import ast.control_flow.ASTIf;import ast.control_flow.ASTWhile;import ast.identifiers.ASTIdentifier;import ast.identifiers.ASTLet;import ast.logical.*;import java.util.ArrayList;import java.util.List;import java.util.ArrayList;
 
 public class Parser {
 
@@ -76,11 +76,13 @@ Exp Start() :
 }
 
 Exp decl() :
-{ Exp e,b; Token x, t; }
+{ Exp e, b; List<ASTParameter> params = new ArrayList<ASTParameter>(); Token x, id, type; }
 {
-  <LET> x = < ID > < EQ > e = decl() <IN > b = decl() { return new ASTLet(x.image, e, b); }
-| <FUN> x = <ID> t = <COLON> <ARROW> e = decl() <IN> b = decl() { return new ASTLet(x.image, e, b); }
-|  e = control_flow() { return e; }
+  <FUN>
+  ( <LPAR> id = <ID> <COLON> type = <ID> <RPAR> { params.add(new ASTParameter(id.image, type.image)); } )*
+  <ARROW> e = decl() { return new ASTClosure(params, e); }
+ |  <LET> x = < ID > < EQ > e = decl() <IN > b = decl() { return new ASTLet(x.image, e, b); }
+ |  e = control_flow() { return e; }
 }
 
 Exp control_flow() :
@@ -135,7 +137,7 @@ Exp Expr() :
 Exp Term() :
 { Exp e1, e2; }
 {
-     e1 = Fact()
+     e1 = fcall()
      [ <DIV> e2 = Term() { e1 = new ASTDiv(e1,e2); }
      | <TIMES> e2 = Term() { e1 = new ASTMult(e1,e2); } ]
      { return e1; }
@@ -145,13 +147,27 @@ Exp Fact() :
 { Token x; Exp e;}
 {
   	x = <Num>
- {
- 	return new ASTInt(Integer.parseInt(x.image));
- }
+ { return new ASTInt(Integer.parseInt(x.image)); }
  | <TRUE> { return new ASTBool(true); }
  | <FALSE> { return new ASTBool(false); }
  | <MINUS> e = Fact() { return new ASTSub(new ASTInt(0),e); }
  | <NEG> e = Fact() { return new ASTNeg(e); }
  | <LPAR> e = decl() <RPAR> { return e; }
  | x = <ID> { return new ASTIdentifier(x.image); }
+}
+
+Exp fcall():
+{Exp e;}
+ {
+   e=Fact() ( e=gets(e) )*
+ { return e; }
+}
+
+Exp gets(Exp exp):
+{Exp e1,e2;}
+ {
+  <LPAR>{ e1 = new ASTCall(exp); }
+  ( e2=logic() {((ASTCall)e1).addArg(e2); }
+  ( ","e2=logic(){((ASTCall)e1).addArg(e2);})* )? <RPAR>
+ { return e1; }
 }

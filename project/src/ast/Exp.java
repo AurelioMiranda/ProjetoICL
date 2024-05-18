@@ -56,6 +56,12 @@ public interface Exp {
         T visit(ASTElse astElse);
 
         T visit(ASTWhile astWhile);
+
+        T visit(ASTClosure astClosure);
+
+        T visit(ASTParameter astParameter);
+
+        T visit(ASTCall astCall);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

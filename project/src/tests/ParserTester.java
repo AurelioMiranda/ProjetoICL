@@ -88,6 +88,12 @@ public class ParserTester {
 		testCase("if false then 2+2 else true end \n");
 		testCase("if true then 2+2 else true end \n");
 	}
+
+	@Test
+	public void testFunctions() throws Exception {
+		testCase("let x = fun (y:int) -> y+2 in x(3) \n");
+		testCase("let x = fun (z:bool) -> z&&true in x(false) \n");
+	}
 }
 
 
