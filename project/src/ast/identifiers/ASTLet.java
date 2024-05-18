@@ -4,8 +4,8 @@ import ast.Exp;
 import interpreter.Env;
 import types.Type;
 
-public class ASTLet  implements ast.Exp  { //TODO: identifiers
-    public String variableName; //Initially List<String> variableName but parser doesnt accept Arraylists so... idk
+public class ASTLet  implements ast.Exp  {
+    public String variableName; //TODO: list of variables and types
     public Exp variableValue;
     public Exp body;
     public Type type;
@@ -14,17 +14,6 @@ public class ASTLet  implements ast.Exp  { //TODO: identifiers
         this.variableName = variableName;
         this.variableValue = variableValue;
         this.body = body;
-    }
-
-    public ASTLet (){ }
-
-    public void addPair(String id, Exp value){
-        this.variableName = id;
-        this.variableValue = value;
-    }
-
-    public void addType (String type){
-
     }
 
     @Override

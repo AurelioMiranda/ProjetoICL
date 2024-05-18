@@ -151,13 +151,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		Label L2 = new Label();
 		block.addInstruction(new SIPush(0));
 		block.addInstruction(new INEq());
-		block.addInstruction(new SIPush(1));
-		block.addInstruction(new GoTo(L2));
-		block.addInstruction(L1);
-		block.addInstruction(new SIPush(0));
-		block.addInstruction(L2);
-		block.addInstruction(new NOP());
-		return null;
+		return getLabelInstructions(L1, L2);
 	}
 
 
@@ -206,6 +200,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTAssign astAssign) {
+		return null;
+	}
+
 	public static BasicBlock codeGen(Exp e) {
 		CodeGen cg = new CodeGen();
 		e.accept(cg);
@@ -246,11 +245,15 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	private Void getComparisonWithLabels() {
 		Label L1 = new Label();
 		Label L2 = new Label();
+		return getLabelInstructions(L1, L2);
+	}
+
+	private Void getLabelInstructions(Label l1, Label l2) {
 		block.addInstruction(new SIPush(1));
-		block.addInstruction(new GoTo(L2));
-		block.addInstruction(L1);
+		block.addInstruction(new GoTo(l2));
+		block.addInstruction(l1);
 		block.addInstruction(new SIPush(0));
-		block.addInstruction(L2);
+		block.addInstruction(l2);
 		block.addInstruction(new NOP());
 		return null;
 	}

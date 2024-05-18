@@ -93,6 +93,11 @@ public class ParserTester {
 	public void testFunctions() throws Exception {
 		testCase("let x = fun (y:int) -> y+2 in x(3) \n");
 		testCase("let x = fun (z:bool) -> z&&true in x(false) \n");
+		testCase("let x = fun (z:bool) -> z||false in x(true) \n");
+		testCase("let x = fun (z:bool) -> if 2<5&&z then let x = 9 in 5 + x end in x(false) \n");
+		testCase("let x = fun (z:bool) -> if 2<5&&z then let x = 9 in 5 + x end in x(true) \n");
+		testCase("let x = fun (z:bool) -> if z then true else 2+2 end in x(true) \n");
+		testCase("let x = fun (z:bool) -> if z then true else 2+2 end in x(false) \n");
 	}
 }
 

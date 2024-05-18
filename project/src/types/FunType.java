@@ -3,7 +3,6 @@ package types;
 import ast.ASTParameter;
 
 public class FunType implements Type {
-    // TODO: args types
     public Type parameterType;
     public Type type;
     public static final FunType singleton = new FunType();

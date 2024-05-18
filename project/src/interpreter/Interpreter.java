@@ -315,6 +315,11 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         throw new RuntimeException("Not a function value");
     }
 
+    @Override
+    public Value visit(ASTAssign astAssign) {
+        return null;
+    }
+
 
     public static Value interpret(Exp e, Env<Value> env) {
         Interpreter i = new Interpreter();

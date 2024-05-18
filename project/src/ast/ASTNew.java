@@ -11,6 +11,10 @@ public class ASTNew implements Exp {
         this.varName = varName;
     }
 
+    public ASTNew(String varName) {
+        this.varName = varName;
+    }
+
     @Override
     public <T> T accept(Visitor<T, Env<T>> v) {
         return v.visit(this);

@@ -14,7 +14,7 @@ import ast.logical.*;
 import interpreter.Env;
 import types.*;
 
-public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same Env as interpreter?
+public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     private static Env<Type> env;
 
     public static Type typeCheck(Exp e, Env<Type> env) {
@@ -144,7 +144,7 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
     }
 
     @Override
-    public Type visit(ASTIdentifier astIdentifier) { //TODO: identifiers
+    public Type visit(ASTIdentifier astIdentifier) {
         return env.find(astIdentifier.getName());
     }
 
@@ -154,7 +154,7 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
     }
 
     @Override
-    public Type visit(ASTLet astLet) { //TODO: identifiers
+    public Type visit(ASTLet astLet) {
         Type t1 = typeCheck(astLet.variableValue, env);
         env = env.beginScope();
         env.bind(astLet.variableName, t1);
@@ -218,6 +218,10 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
         return NoneType.getNoneType();
     }
 
+
+    //TODO: let x = fun (z:bool) -> if z then true else 2+2 end in if x(true) then 1+4 else 5 end
+    //Type: None
+    //Non computable.
     @Override
     public Type visit(ASTCall astCall) {
         Type funcType = typeCheck(astCall.identifier, env);
@@ -229,5 +233,10 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> { //TODO: same 
             return funcType;
         }
         return NoneType.getNoneType();
+    }
+
+    @Override
+    public Type visit(ASTAssign astAssign) {
+        return null;
     }
 }

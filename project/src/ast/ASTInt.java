@@ -2,7 +2,7 @@ package ast;
 
 import interpreter.Env;
 
-public class ASTInt implements ast.Exp  { //TODO: Minus has conflicts (-3)*6
+public class ASTInt implements ast.Exp  {
     public int value;
 
     public ASTInt(int value) {

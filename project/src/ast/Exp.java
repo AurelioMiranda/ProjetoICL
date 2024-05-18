@@ -62,6 +62,8 @@ public interface Exp {
         T visit(ASTParameter astParameter);
 
         T visit(ASTCall astCall);
+
+        T visit(ASTAssign astAssign);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);
