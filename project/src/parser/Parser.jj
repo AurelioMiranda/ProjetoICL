@@ -1,79 +1,152 @@
 options {
+
   STATIC=false;
+
 }
 
+
+
 PARSER_BEGIN(Parser)
+
+
 
 package parser;
 import ast.*;import ast.arithmetic.ASTAdd;import ast.arithmetic.ASTDiv;import ast.arithmetic.ASTMult;import ast.arithmetic.ASTSub;import ast.control_flow.ASTElse;import ast.control_flow.ASTIf;import ast.control_flow.ASTWhile;import ast.identifiers.ASTIdentifier;import ast.identifiers.ASTLet;import ast.logical.*;import java.util.ArrayList;import java.util.List;import java.util.ArrayList;
 
+
+
 public class Parser {
 
+
+
 }
+
+
 
 PARSER_END(Parser)
 
+
+
 SKIP :
+
 {
+
   " "
+
 | "\t"
+
 | "\r"
+
 }
 
+
+
 TOKEN : /* OPERATORS */
+
 {
+
   < Num: (["0"-"9"]) + >
+
 | < PLUS : "+" >
+
 | < TIMES : "*" >
+
 | < MINUS : "-">
+
 | < NEG : "~">
+
 | < GT: ">" >
+
 | < LT: "<" >
+
 | < GTOEQ: ">=" >
+
 | < LTOEQ: "<=" >
+
 | < DER: "!">
+
 | < DIV : "/">
+
 | < LPAR : "(" >
+
 | < RPAR : ")" >
+
 | < TRUE : "true" >
+
 | < FALSE : "false" >
+
 | < EQ : "=" >
+
 | < NEQ : "!=" >
+
 | < AND : "&&" >
+
 | < OR : "||" >
+
 | < IFQ : "?" >
+
 | < COLON : ":" >
+
 | < SEMICOLON : ";" >
+
 | < WHILE : "while" >
+
 | < DO : "do" >
+
 | < END : "end" >
+
 | < NEW : "new" >
+
 | < ASSIGN : ":=" >
+
 | < UNIT : "()" >
+
 | < EOL: "\n" >
+
 | < LET: "let" >
+
 | < IN: "in" >
+
 | < IF: "if" >
+
 | < THEN: "then" >
+
 | < ELSE: "else" >
 | < FUN: "fun" >
 | < ARROW: "->" >
 }
 
+
+
 TOKEN :
+
 {
+
   < INT : (< DIGIT >)+ >
+
 | < #DIGIT : [ "0"-"9" ] >
+
 | < ID : (< LETTER >)+ >
+
 | < #LETTER : [ "a"-"z", "A"-"Z" ] >
+
 }
 
+
+
 Exp Start() :
+
 { Exp e; }
+
 {
+
    e = decl() <EOL>  { return e; }
+
   | <EOF> { throw new ParseException("End of File encountered. Stopping Parsing."); }
+
 }
+
+
 
 Exp decl() :
 { Exp e, b; List<ASTParameter> params = new ArrayList<ASTParameter>(); Token x, id, type; }
@@ -85,74 +158,158 @@ Exp decl() :
  |  e = control_flow() { return e; }
 }
 
+
+
 Exp control_flow() :
+
 { Exp e,b,eb; }
+
 {
+
   <IF> e = decl() <THEN> b = decl()
+
     [
+
         <ELSE> eb = decl() <END>  { return new ASTElse(e, b, eb); }
+
     ]
+
     <END>
+
         { return new ASTIf(e, b); }
+
   | <WHILE> e = decl() <DO> b = decl() { return new ASTWhile(e, b); }
-  |  e = logic() { return e; }
+
+  |  e = assignment() { return e; }
+
 }
+
+
+
+Exp assignment() :
+
+{ Exp e, v; }
+
+{
+
+    e = logic() ( <ASSIGN> v = assignment() { return new ASTAssign(e, v); } )?
+
+    { return e; }
+
+}
+
+
 
 Exp logic():
+
 { Exp e1,e2; }
+
 {
+
  e1 = eqOp() ( <AND> e2=eqOp() { e1 = new ASTAnd(e1,e2); }
+
                 | <OR> e2=eqOp() { e1 = new ASTOr(e1,e2); } )*
+
   { return e1; }
+
 }
+
+
 
 Exp eqOp():
+
 { Exp e1,e2; }
+
 {
+
  e1 = boolOp() ( <EQ> e2=boolOp() { e1 = new ASTEq(e1,e2); }
+
                 | <NEQ> e2=boolOp() {e1 = new ASTNEq(e1, e2); } )*
+
   { return e1; }
+
 }
 
+
+
 Exp boolOp():
+
 { Exp e1,e2; }
+
 {
+
  e1 = Expr() ( <GT> e2=Expr() { e1 = new ASTGr(e1,e2); }
+
                 | <LT> e2=Expr() { e1 = new ASTLt(e1,e2); }
+
                 | <GTOEQ> e2=Expr() { e1 = new ASTGrOrEq(e1,e2); }
+
                 | <LTOEQ> e2=Expr() { e1 = new ASTLTOrEq(e1,e2); } )*
+
   { return e1; }
+
 }
+
+
+
 
 
 Exp Expr() :
+
 { Exp e1, e2; }
+
 {
+
    e1 = Term()
+
      [<MINUS> e2 = Expr() { e1 = new ASTSub(e1,e2); }
+
      | <PLUS> e2 = Expr() { e1 = new ASTAdd(e1,e2); } ]
+
      { return e1; }
+
 }
 
+
+
 Exp Term() :
+
 { Exp e1, e2; }
+
 {
      e1 = fcall()
      [ <DIV> e2 = Term() { e1 = new ASTDiv(e1,e2); }
+
      | <TIMES> e2 = Term() { e1 = new ASTMult(e1,e2); } ]
+
      { return e1; }
+
 }
 
+
+
 Exp Fact() :
+
 { Token x; Exp e;}
+
 {
+
   	x = <Num>
  { return new ASTInt(Integer.parseInt(x.image)); }
  | <TRUE> { return new ASTBool(true); }
+
  | <FALSE> { return new ASTBool(false); }
+
  | <MINUS> e = Fact() { return new ASTSub(new ASTInt(0),e); }
+
  | <NEG> e = Fact() { return new ASTNeg(e); }
- | <LPAR> e = decl() <RPAR> { return e; }
+
+ | <LPAR> e = logic() <RPAR> { return e; }
+
+ | <NEW> x = <ID> { return new ASTNew(x.image); } // Handling reference creation
+
+ | <DER> e = Expr() { return new ASTDer(e); } // Handling dereference
+
  | x = <ID> { return new ASTIdentifier(x.image); }
 }
 

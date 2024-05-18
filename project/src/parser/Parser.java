@@ -2,6 +2,8 @@
 package parser;
 import ast.*;import ast.arithmetic.ASTAdd;import ast.arithmetic.ASTDiv;import ast.arithmetic.ASTMult;import ast.arithmetic.ASTSub;import ast.control_flow.ASTElse;import ast.control_flow.ASTIf;import ast.control_flow.ASTWhile;import ast.identifiers.ASTIdentifier;import ast.identifiers.ASTLet;import ast.logical.*;import java.util.ArrayList;import java.util.List;import java.util.ArrayList;
 
+
+
 public class Parser implements ParserConstants {
 
   final public Exp Start() throws ParseException {
@@ -10,10 +12,12 @@ public class Parser implements ParserConstants {
     case Num:
     case MINUS:
     case NEG:
+    case DER:
     case LPAR:
     case TRUE:
     case FALSE:
     case WHILE:
+    case NEW:
     case LET:
     case IF:
     case FUN:
@@ -72,10 +76,12 @@ public class Parser implements ParserConstants {
     case Num:
     case MINUS:
     case NEG:
+    case DER:
     case LPAR:
     case TRUE:
     case FALSE:
     case WHILE:
+    case NEW:
     case IF:
     case ID:
       e = control_flow();
@@ -121,18 +127,37 @@ public class Parser implements ParserConstants {
     case Num:
     case MINUS:
     case NEG:
+    case DER:
     case LPAR:
     case TRUE:
     case FALSE:
+    case NEW:
     case ID:
-      e = logic();
-                   {if (true) return e;}
+      e = assignment();
+                        {if (true) return e;}
       break;
     default:
       jj_la1[4] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Exp assignment() throws ParseException {
+  Exp e, v;
+    e = logic();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ASSIGN:
+      jj_consume_token(ASSIGN);
+      v = assignment();
+                                              {if (true) return new ASTAssign(e, v);}
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      ;
+    }
+      {if (true) return e;}
     throw new Error("Missing return statement in function");
   }
 
@@ -342,9 +367,19 @@ public class Parser implements ParserConstants {
       break;
     case LPAR:
       jj_consume_token(LPAR);
-      e = decl();
+      e = logic();
       jj_consume_token(RPAR);
-                              {if (true) return e;}
+                               {if (true) return e;}
+      break;
+    case NEW:
+      jj_consume_token(NEW);
+      x = jj_consume_token(ID);
+                    {if (true) return new ASTNew(x.image);}
+      break;
+    case DER:
+      jj_consume_token(DER);
+      e = Expr();
+                      {if (true) return new ASTDer(e);}
       break;
     case ID:
       x = jj_consume_token(ID);
