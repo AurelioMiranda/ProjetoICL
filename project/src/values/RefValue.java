@@ -1,27 +1,26 @@
 package values;
 
-public class RefValue implements Value{
-    private Value value;
+public class RefValue implements Value {
+    private int address;
 
-    public RefValue(Value value) {
-        this.value = value;
+    public RefValue(int address) {
+        this.address = address;
     }
 
-    public Value getValue() {
-        return value;
+    public int getAddress() {
+        return address;
     }
 
-    //fala sobre o valor da casa a referencia em si
-    public void setValue(Value value) {
-        this.value = value;
-    }
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof RefValue && value == ((RefValue)obj).getValue();
-    }
-    @Override
-    public String toString() {
-        return "ref("+value.toString()+")";
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        RefValue refValue = (RefValue) obj;
+        return address == refValue.address;
     }
 
+    @Override
+    public String toString() {
+        return "Ref(" + address + ")";
+    }
 }

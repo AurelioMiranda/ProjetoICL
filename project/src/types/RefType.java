@@ -1,23 +1,26 @@
 package types;
 
-public class RefType {
-    private Type innerType;
+public class RefType implements Type {
+    private Type referencedType;
 
-    public RefType(Type innerType) {
-        this.innerType = innerType;
+    public RefType(Type referencedType) {
+        this.referencedType = referencedType;
     }
 
-    public Type getInnerType() {
-        return innerType;
+    public Type getReferencedType() {
+        return referencedType;
     }
 
+    @Override
     public boolean equals(Object obj) {
-        return this == obj;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        RefType refType = (RefType) obj;
+        return referencedType.equals(refType.referencedType);
     }
-
 
     @Override
     public String toString() {
-        return "RefType(" + innerType.toString() + ")";
+        return "Ref(" + referencedType.toString() + ")";
     }
 }

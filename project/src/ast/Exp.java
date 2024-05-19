@@ -1,6 +1,6 @@
 package ast;
 
-
+import ast.references.*;
 import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
 import ast.arithmetic.ASTMult;
@@ -11,6 +11,8 @@ import ast.control_flow.ASTWhile;
 import ast.identifiers.ASTIdentifier;
 import ast.identifiers.ASTLet;
 import ast.logical.*;
+import ast.references.ASTAssign;
+import ast.references.ASTDeref;
 import interpreter.Env;
 
 public interface Exp {
@@ -47,8 +49,6 @@ public interface Exp {
 
         T visit(ASTIdentifier astIdentifier);
 
-        T visit(ASTNew astNew);
-
         T visit(ASTLet astLet);
 
         T visit(ASTIf astIf);
@@ -64,6 +64,11 @@ public interface Exp {
         T visit(ASTCall astCall);
 
         T visit(ASTAssign astAssign);
+
+        T visit(ASTNew astNew);
+
+        T visit(ASTDeref astDeref);
+
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

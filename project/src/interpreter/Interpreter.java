@@ -11,11 +11,16 @@ import ast.control_flow.ASTWhile;
 import ast.identifiers.ASTIdentifier;
 import ast.identifiers.ASTLet;
 import ast.logical.*;
+import ast.references.ASTAssign;
+import ast.references.ASTDeref;
+import ast.references.ASTNew;
 import types.Type;
 import values.*;
 
 
 public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
+    private Memory memory = new Memory();
+
     private static Env<Value> env;
 
     @Override
@@ -195,17 +200,19 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         throw new ArithmeticException();
     }
 
+
     @Override
     public Value visit(ASTAdd e) {
-        Value v = e.arg1.accept(this);
-        if (v instanceof IntValue v1) {
-            v = e.arg2.accept(this);
-            if (v instanceof IntValue v2) {
-                return new IntValue(v1.getValue() + v2.getValue());
+        Value v1 = e.arg1.accept(this);
+        if (v1 instanceof IntValue) {
+            Value v2 = e.arg2.accept(this);
+            if (v2 instanceof IntValue) {
+                return new IntValue(((IntValue) v1).getValue() + ((IntValue) v2).getValue());
             }
         }
         throw new ArithmeticException();
     }
+
 
     @Override
     public Value visit(ASTDiv e) {
@@ -226,19 +233,18 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
     public Value visit(ASTIdentifier e) {
         Value v = (Value) env.find(e.getName());
         if (v instanceof IntValue v1) {
-            return new IntValue(((IntValue) v).getValue());
+            return new IntValue(v1.getValue());
         } else if (v instanceof BoolValue v1) {
-            return new BoolValue(((BoolValue) v).getValue());
-        } else if (v instanceof  ClosureValue c1) {
+            return new BoolValue(v1.getValue());
+        } else if (v instanceof ClosureValue c1) {
             return c1;
+        } else if (v instanceof RefValue r1) {
+            return r1;  // Return the reference value
         }
         throw new ArithmeticException();
     }
 
-    @Override
-    public Value visit(ASTNew astNew) {
-        return null;
-    }
+
 
     @Override
     public Value visit(ASTLet astLet) {
@@ -317,8 +323,39 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
     @Override
     public Value visit(ASTAssign astAssign) {
-        return null;
+        Value lhsValue = interpret(astAssign.getLhs(), env);
+        Value rhsValue = interpret(astAssign.getRhs(), env);
+        if (lhsValue instanceof RefValue) {
+            int address = ((RefValue) lhsValue).getAddress();
+            memory.set(address, rhsValue);
+            return rhsValue;
+        } else {
+            throw new RuntimeException("Left-hand side of assignment must be a reference type");
+        }
     }
+
+    @Override
+    public Value visit(ASTNew astNew) {
+        Value value = interpret(astNew.expression, env);
+        int address = memory.allocate(value);
+        return new RefValue(address);
+    }
+
+
+    @Override
+    public Value visit(ASTDeref astDeref) {
+        Value refValue = interpret(astDeref.expression, env);
+        if (refValue instanceof RefValue) {
+            int address = ((RefValue) refValue).getAddress();
+            Value value = memory.get(address);
+            return value;
+        } else {
+            throw new RuntimeException("Dereference operation requires a reference value");
+        }
+    }
+
+
+
 
 
     public static Value interpret(Exp e, Env<Value> env) {

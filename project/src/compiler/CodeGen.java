@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-
+import ast.references.*;
 import ast.*;
 import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
@@ -167,6 +167,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTNew astNew) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTDeref astDeref) {
 		return null;
 	}
 

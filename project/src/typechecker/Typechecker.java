@@ -11,8 +11,12 @@ import ast.control_flow.ASTWhile;
 import ast.identifiers.ASTIdentifier;
 import ast.identifiers.ASTLet;
 import ast.logical.*;
+import ast.references.ASTAssign;
+import ast.references.ASTDeref;
+import ast.references.ASTNew;
 import interpreter.Env;
 import types.*;
+
 
 public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     private static Env<Type> env;
@@ -150,8 +154,26 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTNew astNew) { //TODO: references
-        return null;
+        // Type check the expression E
+        Type exprType = typeCheck(astNew.expression, env);
+
+        // Return a RefType of the expression's type
+        return new RefType(exprType);
     }
+
+    @Override
+    public Type visit(ASTDeref astDeref) {
+        // Type check the expression E
+        Type exprType = typeCheck(astDeref.expression, env);
+
+        // Ensure the expression is a RefType
+        if (exprType instanceof RefType) {
+            // Return the referenced type
+            return ((RefType) exprType).getReferencedType();
+        } else {
+            // Dereferencing a non-reference type is an error
+            throw new RuntimeException("Dereference operation requires a reference type.");
+        }    }
 
     @Override
     public Type visit(ASTLet astLet) {
@@ -235,8 +257,29 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
         return NoneType.getNoneType();
     }
 
+
+
     @Override
     public Type visit(ASTAssign astAssign) {
-        return null;
+        // Type check the LHS expression E1
+        Type lhsType = typeCheck(astAssign.getLhs(), env);
+
+        // Type check the RHS expression E2
+        Type rhsType = typeCheck(astAssign.getRhs(), env);
+
+        // Ensure the LHS is a RefType
+        if (lhsType instanceof RefType) {
+            // Ensure the RHS type matches the type referenced by the LHS
+            if (rhsType.equals(((RefType) lhsType).getReferencedType())) {
+                // Return the RHS type as the result of the assignment
+                return rhsType;
+            } else {
+                throw new RuntimeException("Type mismatch in assignment: " + rhsType + " cannot be assigned to " + lhsType);
+            }
+        } else {
+            // LHS must be a reference type
+            throw new RuntimeException("Left-hand side of assignment must be a reference type.");
+        }
+
     }
 }
