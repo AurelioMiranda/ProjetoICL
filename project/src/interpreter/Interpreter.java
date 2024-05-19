@@ -19,7 +19,7 @@ import values.*;
 
 
 public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
-    private Memory memory = new Memory();
+    private static Memory memory = new Memory();
 
     private static Env<Value> env;
 
