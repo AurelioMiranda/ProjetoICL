@@ -177,13 +177,28 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTIf astIf) {
+		astIf.condition.accept(this);
+		Label endLabel = new Label();
+		//block.addInstruction(new IIfFalse(endLabel));
+		astIf.body.accept(this);
+		block.addInstruction(endLabel);
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTElse astElse) {
+		astElse.condition.accept(this);
+		Label elseLabel = new Label();
+		Label endLabel = new Label();
+		//block.addInstruction(new IIfFalse(elseLabel)); // Jump to elseLabel if condition is false
+		astElse.ifBody.accept(this);
+		block.addInstruction(new GoTo(endLabel));
+		block.addInstruction(elseLabel);
+		astElse.elseBody.accept(this);
+		block.addInstruction(endLabel);
 		return null;
 	}
+
 
 	@Override
 	public Void visit(ASTWhile astWhile) {
@@ -192,11 +207,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTClosure astClosure) {
-		return null;
-	}
-
-	@Override
-	public Void visit(ASTParameter astParameter) {
 		return null;
 	}
 

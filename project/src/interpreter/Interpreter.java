@@ -17,6 +17,8 @@ import ast.references.ASTNew;
 import types.Type;
 import values.*;
 
+import java.util.Map;
+
 
 public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
     private static Memory memory = new Memory();
@@ -248,9 +250,13 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
     @Override
     public Value visit(ASTLet astLet) {
-        Value v1 = interpret(astLet.variableValue, env);
         env = env.beginScope();
-        env.bind(astLet.variableName, v1);
+        for (Map.Entry<String, Exp> entry : astLet.variables.entrySet()) {
+            String variableName = entry.getKey();
+            Exp variableValue = entry.getValue();
+            Value v1 = interpret(variableValue, env);
+            env.bind(variableName, v1);
+        }
         Value val = interpret(astLet.body, env);
         env = env.endScope();
         return val;
@@ -303,13 +309,9 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         return new ClosureValue(astClosure.params.get(0).identifier, astClosure.code, closureEnv);
     }
 
-    @Override
-    public Value visit(ASTParameter astParameter) {
-        return null;
-    }
 
     @Override
-    public Value visit(ASTCall astCall) { //TODO: how does this work... i genuinely don't understand
+    public Value visit(ASTCall astCall) {
         Value callee = interpret(astCall.identifier, env);
 
         if (callee instanceof ClosureValue closureValue) {

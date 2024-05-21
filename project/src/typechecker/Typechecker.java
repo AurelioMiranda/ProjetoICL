@@ -16,6 +16,9 @@ import ast.references.ASTDeref;
 import ast.references.ASTNew;
 import interpreter.Env;
 import types.*;
+import values.ClosureValue;
+
+import java.util.Map;
 
 
 public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
@@ -149,11 +152,16 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTIdentifier astIdentifier) {
+        try {
+            Type t = env.find(astIdentifier.getName());
+        } catch (NullPointerException e){
+            return NoneType.getNoneType();
+        }
         return env.find(astIdentifier.getName());
     }
 
     @Override
-    public Type visit(ASTNew astNew) { //TODO: references
+    public Type visit(ASTNew astNew) {
         // Type check the expression E
         Type exprType = typeCheck(astNew.expression, env);
 
@@ -177,9 +185,13 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTLet astLet) {
-        Type t1 = typeCheck(astLet.variableValue, env);
         env = env.beginScope();
-        env.bind(astLet.variableName, t1);
+        for (Map.Entry<String, Exp> entry : astLet.variables.entrySet()) {
+            String variableName = entry.getKey();
+            Exp variableValue = entry.getValue();
+            Type t1 = typeCheck(variableValue, env);
+            env.bind(variableName, t1);
+        }
         Type t = typeCheck(astLet.body, env);
         env = env.endScope();
         return t;
@@ -203,7 +215,7 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
             if (ifBody == elseBody){
                 return ifBody;
             }
-            return UnitType.getUnitType();
+            return NoneType.getNoneType();
         }
         return NoneType.getNoneType();
     }
@@ -230,29 +242,16 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
             return new FunType(astClosure.params.get(0).type,t1);
     }
 
-    @Override
-    public Type visit(ASTParameter astParameter) {
-        Type idType = env.find(astParameter.identifier);
-        Type paramType = astParameter.type;
-        if (idType.equals(paramType)){
-            return idType;
-        }
-        return NoneType.getNoneType();
-    }
 
-
-    //TODO: let x = fun (z:bool) -> if z then true else 2+2 end in if x(true) then 1+4 else 5 end
-    //Type: None
-    //Non computable.
     @Override
     public Type visit(ASTCall astCall) {
         Type funcType = typeCheck(astCall.identifier, env);
-        if (funcType == typeCheck(astCall.identifier, env)) { //TODO: fix (is Fun(T0,TR)))
+        if (funcType instanceof FunType funType) {
             Type eType = typeCheck(astCall.arguments, env);
-            if (eType != eType) { //TODO: fix (!= T0)
+            if (eType != funType.parameterType) {
                 return NoneType.getNoneType();
             }
-            return funcType;
+            return funType.type;
         }
         return NoneType.getNoneType();
     }

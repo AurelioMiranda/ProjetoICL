@@ -3,7 +3,7 @@ package ast;
 import interpreter.Env;
 import types.*;
 
-public class ASTParameter implements ast.Exp {
+public class ASTParameter {
     public String identifier;
     public Type type;
 
@@ -13,7 +13,7 @@ public class ASTParameter implements ast.Exp {
             case "unit" -> UnitType.getUnitType();
             case "bool" -> BoolType.getBoolType();
             case "int" -> IntType.getIntType();
-            case "ref" -> IntType.getIntType(); //TODO: Ref type instance
+            case "ref" -> RefType.getReferencedType(); //TODO: This might be an issue
             default -> UnitType.getUnitType();
         };
     }
@@ -24,10 +24,5 @@ public class ASTParameter implements ast.Exp {
 
     public Type getType() {
         return type;
-    }
-
-    @Override
-    public <T> T accept(Visitor<T, Env<T>> v) {
-        return v.visit(this);
     }
 }

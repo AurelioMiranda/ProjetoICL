@@ -13,6 +13,8 @@ import ast.logical.*;
 import ast.references.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Parser { }
 
@@ -81,11 +83,13 @@ Exp Start() :
 }
 
 Exp decl() :
-{ Exp e, b; List<ASTParameter> params = new ArrayList<ASTParameter>(); Token x, id, type; }
+{ Exp e, b; List<ASTParameter> params = new ArrayList<ASTParameter>();
+ Map<String, Exp> variables = new HashMap<String, Exp>(); Token x, id, type; }
 {
   <FUN> ( <LPAR> id = <ID> <COLON> type = <ID> <RPAR> { params.add(new ASTParameter(id.image, type.image)); } )*
     <ARROW> e = decl() { return new ASTClosure(params, e); }
- |  <LET> x = < ID > < EQ > e = decl() <IN > b = decl() { return new ASTLet(x.image, e, b); }
+ |  <LET> ( x = < ID > < EQ > e = decl() { variables.put(x.image, e); } )*
+        <IN > b = decl() { return new ASTLet(variables, b); }
  |  e = control_flow() { return e; }
 }
 
@@ -159,7 +163,7 @@ Exp Fact() :
  | <MINUS> e = Fact() { return new ASTSub(new ASTInt(0),e); }
  | <NEG> e = Fact() { return new ASTNeg(e); }
  | <LPAR> e = logic() <RPAR> { return e; }
- | <NEW> e = logic() { return new ASTNew(e); } // Handling reference creation
+ | <NEW> <LPAR> e = logic() <RPAR> { return new ASTNew(e); } // Handling reference creation
  | <DER> e = Fact() { return new ASTDeref(e); } // Handling dereference
  | x = <ID> { return new ASTIdentifier(x.image); }
 }
