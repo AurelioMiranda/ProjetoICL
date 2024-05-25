@@ -1,13 +1,13 @@
 package types;
 
 public class RefType implements Type {
-    private Type referencedType;
+    private static Type referencedType;
 
     public RefType(Type referencedType) {
         this.referencedType = referencedType;
     }
 
-    public Type getReferencedType() {
+    public static Type getReferencedType() {
         return referencedType;
     }
 

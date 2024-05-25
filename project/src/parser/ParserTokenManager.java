@@ -8,6 +8,8 @@ import ast.logical.*;
 import ast.references.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /** Token Manager. */
 public class ParserTokenManager implements ParserConstants

@@ -18,12 +18,12 @@ public class ParserTester {
 	}
 	
 	@Test
-	public void test01() throws Exception {
+	public void test() throws Exception {
 		testCase("1\n");
 	}
 
 	@Test
-	public void test02ArithmeticOps() throws Exception {
+	public void test_arithmetic_ops() throws Exception {
 		testCase("1+2\n");
 		testCase("1-2-3\n");
 		testCase("4*2\n");
@@ -31,14 +31,14 @@ public class ParserTester {
 	}
 	
 	@Test
-	public void test03Error01() throws Exception {
+	public void test_error() throws Exception {
 		testNegativeCase("1++1\n");
 		testNegativeCase("*2\n");
 		testNegativeCase("4/+2/2\n");
 	}
 	
 	@Test
-	public void testsArithmetic() throws Exception {
+	public void tests_arithmetic() throws Exception {
 		testCase("-1\n");
 		testCase("-1*3\n");
 		testCase("2*2\n");
@@ -47,7 +47,7 @@ public class ParserTester {
 	}
 
 	@Test
-	public void testsLogical() throws Exception {
+	public void tests_logical() throws Exception {
 		testCase("true\n");
 		testCase("false\n");
 		testCase("~false\n");
@@ -67,17 +67,19 @@ public class ParserTester {
 	}
 
 	@Test
-	public void testsIdentifiers() throws Exception {
+	public void tests_identifiers() throws Exception {
 		testCase("let x = 9 in x + 2 \n");
 		testCase("let x = true in x = true \n");
 		testCase("let x = true in ~(x = true)||true \n");
 		testCase("let x = 9 in x = 9 \n");
 		testCase("let x = 9 in let y = 7 in x + y \n");
 		testCase("let x = 9 in let y = 7 in let z = 5 in z + x + y \n");
+		testCase("let x = 9 y = 8 in x + y \n");
+		testCase("let x = 9 y = true in x > 9 && y \n");
 	}
 
 	@Test
-	public void testControlFlow() throws Exception {
+	public void test_control_flow() throws Exception {
 		testCase("if ~false then 2<5 end \n");
 		testCase("if 2<5 then true&&~false end \n");
 		testCase("if true then 2+2 end \n");
@@ -90,7 +92,15 @@ public class ParserTester {
 	}
 
 	@Test
-	public void testFunctions() throws Exception {
+	public void test_references() throws Exception {
+		testCase("new(7) \n");
+		testCase("let x = new(9) in !x + 4 \n");
+		testCase("let x = new(true) in !x && false \n");
+		testCase("let x = fun (z:ref) -> !z in x(new(4)) \n");
+	}
+
+	@Test
+	public void test_functions() throws Exception {
 		testCase("let x = fun (y:int) -> y+2 in x(3) \n");
 		testCase("let x = fun (z:bool) -> z&&true in x(false) \n");
 		testCase("let x = fun (z:bool) -> z||false in x(true) \n");
@@ -98,6 +108,7 @@ public class ParserTester {
 		testCase("let x = fun (z:bool) -> if 2<5&&z then let x = 9 in 5 + x end in x(true) \n");
 		testCase("let x = fun (z:bool) -> if z then true else 2+2 end in x(true) \n");
 		testCase("let x = fun (z:bool) -> if z then true else 2+2 end in x(false) \n");
+		testCase("let x = fun (z:bool) -> if z then 1 else 2+2 end in if x(true)<5 then 1+4 else 5 end \n");
 	}
 }
 

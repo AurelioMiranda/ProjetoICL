@@ -59,8 +59,6 @@ public interface Exp {
 
         T visit(ASTClosure astClosure);
 
-        T visit(ASTParameter astParameter);
-
         T visit(ASTCall astCall);
 
         T visit(ASTAssign astAssign);

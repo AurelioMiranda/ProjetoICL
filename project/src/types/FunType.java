@@ -1,7 +1,5 @@
 package types;
 
-import ast.ASTParameter;
-
 public class FunType implements Type {
     public Type parameterType;
     public Type type;
