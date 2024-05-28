@@ -33,6 +33,9 @@ import target.control_flow.NOP;
 import target.identifiers.*;
 import target.logical.IAnd;
 import target.logical.IOr;
+import target.memory.IAlloc;
+import target.memory.ILoad;
+import target.memory.IStore;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
@@ -196,13 +199,22 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTNew astNew) {
+		astNew.expression.accept(this);
+		block.addInstruction(new IAlloc());
+		block.addInstruction(new IStore());
+
 		return null;
 	}
 
+
 	@Override
 	public Void visit(ASTDeref astDeref) {
+		astDeref.expression.accept(this);
+		block.addInstruction(new ILoad());
+
 		return null;
 	}
+
 
 	@Override
 	public Void visit(ASTPair astPair) {
@@ -261,8 +273,13 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTAssign astAssign) {
+		astAssign.getRhs().accept(this);
+		astAssign.getLhs().accept(this);
+		block.addInstruction(new IStore()); 
+
 		return null;
 	}
+
 
 	public static BasicBlock codeGen(Exp e) {
 		CodeGen cg = new CodeGen();
