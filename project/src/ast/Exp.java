@@ -1,5 +1,8 @@
 package ast;
 
+import ast.extra.ASTFirst;
+import ast.extra.ASTPair;
+import ast.extra.ASTSecond;
 import ast.references.*;
 import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
@@ -67,6 +70,11 @@ public interface Exp {
 
         T visit(ASTDeref astDeref);
 
+        T visit(ASTPair astPair);
+
+        T visit(ASTFirst astFirst);
+
+        T visit(ASTSecond astSecond);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

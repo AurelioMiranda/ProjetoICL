@@ -6,6 +6,7 @@ import ast.control_flow.*;
 import ast.identifiers.*;
 import ast.logical.*;
 import ast.references.*;
+import ast.extra.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,9 @@ public class Parser implements ParserConstants {
     case LET:
     case IF:
     case FUN:
+    case LBRAC:
+    case FIRST:
+    case SECOND:
     case ID:
       e = decl();
       jj_consume_token(EOL);
@@ -103,6 +107,9 @@ public class Parser implements ParserConstants {
     case WHILE:
     case NEW:
     case IF:
+    case LBRAC:
+    case FIRST:
+    case SECOND:
     case ID:
       e = control_flow();
                          {if (true) return e;}
@@ -143,6 +150,24 @@ public class Parser implements ParserConstants {
       jj_consume_token(DO);
       b = decl();
                                          {if (true) return new ASTWhile(e, b);}
+      break;
+    case LBRAC:
+      jj_consume_token(LBRAC);
+      e = decl();
+      jj_consume_token(COMMA);
+      b = decl();
+      jj_consume_token(RBRAC);
+                                                    {if (true) return new ASTPair(e, b);}
+      break;
+    case FIRST:
+      jj_consume_token(FIRST);
+      e = decl();
+                         {if (true) return new ASTFirst(e);}
+      break;
+    case SECOND:
+      jj_consume_token(SECOND);
+      e = decl();
+                          {if (true) return new ASTSecond(e);}
       break;
     case Num:
     case MINUS:
@@ -446,23 +471,28 @@ public class Parser implements ParserConstants {
     case LPAR:
     case TRUE:
     case FALSE:
+    case WHILE:
     case NEW:
+    case IF:
+    case LBRAC:
+    case FIRST:
+    case SECOND:
     case ID:
-      e2 = logic();
-                ((ASTCall)e1).addArg(e2);
+      e2 = control_flow();
+                       ((ASTCall)e1).addArg(e2);
       label_7:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case 44:
+        case COMMA:
           ;
           break;
         default:
           jj_la1[19] = jj_gen;
           break label_7;
         }
-        jj_consume_token(44);
-        e2 = logic();
-                  ((ASTCall)e1).addArg(e2);
+        jj_consume_token(COMMA);
+        e2 = control_flow();
+                         ((ASTCall)e1).addArg(e2);
       }
       break;
     default:
@@ -491,10 +521,10 @@ public class Parser implements ParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x2406a191,0x8000,0x0,0x2406a190,0x0,0x2406a190,0x40000000,0x600000,0x600000,0x180000,0x180000,0x1e00,0x1e00,0xa0,0xa0,0x4040,0x4040,0x2006a190,0x8000,0x0,0x2006a190,};
+      jj_la1_0 = new int[] {0x2406a191,0x8000,0x0,0x2406a190,0x0,0x2406a190,0x40000000,0x600000,0x600000,0x180000,0x180000,0x1e00,0x1e00,0xa0,0xa0,0x4040,0x4040,0x2006a190,0x8000,0x0,0x2406a190,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x44a,0x0,0x400,0x44a,0x20,0x408,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x400,0x0,0x1000,0x400,};
+      jj_la1_1 = new int[] {0x994a,0x0,0x8000,0x994a,0x20,0x9908,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x8000,0x0,0x400,0x9908,};
    }
 
   /** Constructor with InputStream. */
@@ -611,7 +641,7 @@ public class Parser implements ParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[45];
+    boolean[] la1tokens = new boolean[49];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -628,7 +658,7 @@ public class Parser implements ParserConstants {
         }
       }
     }
-    for (int i = 0; i < 45; i++) {
+    for (int i = 0; i < 49; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

@@ -110,6 +110,16 @@ public class ParserTester {
 		testCase("let x = fun (z:bool) -> if z then true else 2+2 end in x(false) \n");
 		testCase("let x = fun (z:bool) -> if z then 1 else 2+2 end in if x(true)<5 then 1+4 else 5 end \n");
 	}
+
+	@Test
+	public void test_extras() throws Exception {
+		testCase("first{5,9} \n");
+		testCase("second{true,5} \n");
+		testCase("second{5+5,true&&false} \n");
+		testCase("let x = {5,6} in first(x) \n");
+		testCase("let x = {5, {false, true}} in second second(x) \n");
+		testCase("let x = {5, {{5, {false, 7}}, true}} in second second first second(x) \n");
+	}
 }
 
 

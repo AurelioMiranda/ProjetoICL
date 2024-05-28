@@ -83,13 +83,23 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int ARROW = 39;
   /** RegularExpression Id. */
-  int INT = 40;
+  int LBRAC = 40;
   /** RegularExpression Id. */
-  int DIGIT = 41;
+  int RBRAC = 41;
   /** RegularExpression Id. */
-  int ID = 42;
+  int COMMA = 42;
   /** RegularExpression Id. */
-  int LETTER = 43;
+  int FIRST = 43;
+  /** RegularExpression Id. */
+  int SECOND = 44;
+  /** RegularExpression Id. */
+  int INT = 45;
+  /** RegularExpression Id. */
+  int DIGIT = 46;
+  /** RegularExpression Id. */
+  int ID = 47;
+  /** RegularExpression Id. */
+  int LETTER = 48;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -136,11 +146,15 @@ public interface ParserConstants {
     "\"else\"",
     "\"fun\"",
     "\"->\"",
+    "\"{\"",
+    "\"}\"",
+    "\",\"",
+    "\"first\"",
+    "\"second\"",
     "<INT>",
     "<DIGIT>",
     "<ID>",
     "<LETTER>",
-    "\",\"",
   };
 
 }

@@ -11,6 +11,7 @@ import ast.control_flow.*;
 import ast.identifiers.*;
 import ast.logical.*;
 import ast.references.*;
+import ast.extra.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,11 @@ TOKEN : /* OPERATORS */
 | < ELSE: "else" >
 | < FUN: "fun" >
 | < ARROW: "->" >
+| < LBRAC: "{" >
+| < RBRAC: "}" >
+| < COMMA: "," >
+| < FIRST: "first" >
+| < SECOND: "second" >
 }
 
 TOKEN :
@@ -99,6 +105,9 @@ Exp control_flow() :
   <IF> e = decl() <THEN> b = decl() [<ELSE> eb = decl() <END>  { return new ASTElse(e, b, eb); }]
       <END>{ return new ASTIf(e, b); }
   | <WHILE> e = decl() <DO> b = decl() { return new ASTWhile(e, b); }
+  | <LBRAC> e = decl() <COMMA> b = decl() <RBRAC> { return new ASTPair(e, b); }
+  | <FIRST> e = decl() { return new ASTFirst(e); }
+  | <SECOND> e = decl() { return new ASTSecond(e); }
   |  e = assignment() { return e; }
 }
 
@@ -179,7 +188,7 @@ Exp gets(Exp exp):
 { Exp e1,e2; }
  {
   <LPAR>{ e1 = new ASTCall(exp); }
-  ( e2=logic() {((ASTCall)e1).addArg(e2); }
-  ( ","e2=logic(){((ASTCall)e1).addArg(e2);})* )? <RPAR>
+  ( e2=control_flow() {((ASTCall)e1).addArg(e2); }
+  ( ","e2=control_flow(){((ASTCall)e1).addArg(e2);})* )? <RPAR>
     { return e1; }
 }

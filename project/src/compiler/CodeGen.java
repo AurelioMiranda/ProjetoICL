@@ -3,7 +3,11 @@ package compiler;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.Map;
 
+import ast.extra.ASTFirst;
+import ast.extra.ASTPair;
+import ast.extra.ASTSecond;
 import ast.references.*;
 import ast.*;
 import ast.arithmetic.ASTAdd;
@@ -26,6 +30,7 @@ import target.compare.*;
 import target.control_flow.GoTo;
 import target.control_flow.Label;
 import target.control_flow.NOP;
+import target.identifiers.*;
 import target.logical.IAnd;
 import target.logical.IOr;
 
@@ -157,11 +162,35 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTIdentifier astIdentifier) {
+		block.addInstruction(new ALoad(0/*astIdentifier.getName()*/)); //TODO: fix this
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTLet astLet) {
+		String frameId = generateFrameId();
+		block.addInstruction(new New(frameId));
+		block.addInstruction(new Dup());
+		block.addInstruction(new InvokeSpecial(frameId + "/<init>()V"));
+		block.addInstruction(new Dup());
+		block.addInstruction(new ALoad(0));
+		block.addInstruction(new PutField(frameId + "/SL", "Lframe_prev;"));
+		block.addInstruction(new AStore(0));
+
+		int i = 0;
+		for (Map.Entry<String, Exp> entry : astLet.variables.entrySet()) {
+			entry.getValue().accept(this);
+			block.addInstruction(new ALoad(0));
+			block.addInstruction(new PutField(frameId + "/loc_" + i, getType(entry.getValue())));
+			i++;
+		}
+
+		astLet.body.accept(this);
+
+		block.addInstruction(new ALoad(0));
+		block.addInstruction(new CheckCast(frameId));
+		block.addInstruction(new GetField(frameId + "/SL", "Lframe_prev;"));
+		block.addInstruction(new AStore(0));
 		return null;
 	}
 
@@ -172,6 +201,21 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTDeref astDeref) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTPair astPair) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTFirst astFirst) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTSecond astSecond) {
 		return null;
 	}
 
@@ -271,6 +315,19 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		block.addInstruction(l2);
 		block.addInstruction(new NOP());
 		return null;
+	}
+
+	private String generateFrameId() {
+		return "frame_" + System.currentTimeMillis();
+	}
+
+	private String getType(Exp exp) {
+		if (exp instanceof ASTInt) {
+			return "I";
+		} else if (exp instanceof ASTBool) {
+			return "Z";
+		}
+		return "L";
 	}
 	
 	public static void writeToFile(Exp e, String filename) throws FileNotFoundException {

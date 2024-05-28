@@ -8,12 +8,17 @@ import ast.arithmetic.ASTSub;
 import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
+import ast.extra.ASTFirst;
+import ast.extra.ASTPair;
+import ast.extra.ASTSecond;
 import ast.identifiers.ASTIdentifier;
 import ast.identifiers.ASTLet;
 import ast.logical.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
+import types.NoneType;
+import types.TupleType;
 import types.Type;
 import values.*;
 
@@ -242,6 +247,8 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
             return c1;
         } else if (v instanceof RefValue r1) {
             return r1;  // Return the reference value
+        } else if (v instanceof TupleValue t1) {
+            return t1;
         }
         throw new ArithmeticException();
     }
@@ -356,8 +363,33 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         }
     }
 
+    @Override
+    public Value visit(ASTPair astPair) {
+        Value v1 = astPair.first.accept(this);
+        Value v2 = astPair.second.accept(this);
 
+        return new TupleValue(v1, v2);
+    }
 
+    @Override
+    public Value visit(ASTFirst astFirst) {
+        Value t1 = interpret(astFirst.tuple, env);
+
+        if (t1 instanceof TupleValue) {
+            return ((TupleValue<?>) t1).getFirst();
+        }
+        throw new RuntimeException("first can only be applied to Tuple.");
+    }
+
+    @Override
+    public Value visit(ASTSecond astSecond) {
+        Value t1 = interpret(astSecond.tuple, env);
+
+        if (t1 instanceof TupleValue) {
+            return ((TupleValue<?>) t1).getSecond();
+        }
+        throw new RuntimeException("second can only be applied to Tuple.");
+    }
 
 
     public static Value interpret(Exp e, Env<Value> env) {
