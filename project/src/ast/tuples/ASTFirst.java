@@ -1,12 +1,12 @@
-package ast.extra;
+package ast.tuples;
 
 import ast.Exp;
 import interpreter.Env;
 
-public class ASTSecond implements Exp {
+public class ASTFirst implements Exp {
     public Exp tuple;
 
-    public ASTSecond (Exp tuple){
+    public ASTFirst (Exp tuple){
         this.tuple = tuple;
     }
 

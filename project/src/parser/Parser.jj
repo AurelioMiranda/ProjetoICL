@@ -11,7 +11,7 @@ import ast.control_flow.*;
 import ast.identifiers.*;
 import ast.logical.*;
 import ast.references.*;
-import ast.extra.*;
+import ast.tuples.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +72,8 @@ TOKEN : /* OPERATORS */
 | < FIRST: "first" >
 | < SECOND: "second" >
 | < LAST: "last" >
+| < MATCH: "match" >
+| < WITH: "with">
 }
 
 TOKEN :
@@ -101,13 +103,15 @@ Exp decl() :
 }
 
 Exp control_flow() :
-{ Exp e,b,eb, pair; }
+{ Exp e,b,eb, pair; Token id, x;
+ List<String> ids = new ArrayList<String>()}
 {
   <IF> e = decl() <THEN> b = decl() [<ELSE> eb = decl() <END>  { return new ASTElse(e, b, eb); }]
       <END>{ return new ASTIf(e, b); }
   | <WHILE> e = decl() <DO> b = decl() { return new ASTWhile(e, b); }
   | <LBRAC> e = decl() {pair = new ASTPair(e);}
         (<COMMA> b = decl() {((ASTPair)pair).addValue(b);} )* <RBRAC> { return pair; }
+  | <MATCH> id = <ID> <WITH> ( id = <ID> )
   | <FIRST> e = decl() { return new ASTFirst(e); }
   | <SECOND> e = decl() { return new ASTSecond(e); }
   | <LAST> e = decl() { return new ASTLast(e); }

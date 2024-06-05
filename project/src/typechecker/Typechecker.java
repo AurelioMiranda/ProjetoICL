@@ -8,10 +8,10 @@ import ast.arithmetic.ASTSub;
 import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
-import ast.extra.ASTFirst;
-import ast.extra.ASTLast;
-import ast.extra.ASTPair;
-import ast.extra.ASTSecond;
+import ast.tuples.ASTFirst;
+import ast.tuples.ASTLast;
+import ast.tuples.ASTPair;
+import ast.tuples.ASTSecond;
 import ast.identifiers.ASTIdentifier;
 import ast.identifiers.ASTLet;
 import ast.logical.*;
@@ -283,6 +283,7 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
         return NoneType.getNoneType();
     }
 
+    @Override
     public Type visit(ASTClosure astClosure) {
         Env<Type> env0 = env.beginScope();
         for (int i = 0; i < astClosure.params.size(); i++) {

@@ -1,9 +1,9 @@
 package ast;
 
-import ast.extra.ASTFirst;
-import ast.extra.ASTLast;
-import ast.extra.ASTPair;
-import ast.extra.ASTSecond;
+import ast.tuples.ASTFirst;
+import ast.tuples.ASTLast;
+import ast.tuples.ASTPair;
+import ast.tuples.ASTSecond;
 import ast.references.*;
 import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;

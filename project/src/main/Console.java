@@ -15,6 +15,7 @@ import types.BoolType;
 import types.FunType;
 import types.IntType;
 import types.Type;
+import values.BoolValue;
 import values.Value;
 
 public class Console {
@@ -71,13 +72,18 @@ public class Console {
         }
     }
 
-    public static boolean accept(String s) throws ParseException {
+    public static Value accept(String s) throws ParseException {
         Parser parser = new Parser(new ByteArrayInputStream(s.getBytes()));
         try {
-            parser.Start();
-            return true;
-        } catch (ParseException e) {
-            return false;
+            Exp e = parser.Start();
+            Type t = Typechecker.typeCheck(e, new Env<>());
+            if (!t.toString().equals("None")) {
+                return Interpreter.interpret(e, new Env<>());
+            } else {
+                return new BoolValue(false);
+            }
+        } catch (Exception e) {
+            return new BoolValue(false);
         }
     }
 }

@@ -5,10 +5,10 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Map;
 
-import ast.extra.ASTFirst;
-import ast.extra.ASTLast;
-import ast.extra.ASTPair;
-import ast.extra.ASTSecond;
+import ast.tuples.ASTFirst;
+import ast.tuples.ASTLast;
+import ast.tuples.ASTPair;
+import ast.tuples.ASTSecond;
 import ast.references.*;
 import ast.*;
 import ast.arithmetic.ASTAdd;
