@@ -1,9 +1,6 @@
 package ast;
 
-import ast.tuples.ASTFirst;
-import ast.tuples.ASTLast;
-import ast.tuples.ASTPair;
-import ast.tuples.ASTSecond;
+import ast.tuples.*;
 import ast.references.*;
 import ast.arithmetic.ASTAdd;
 import ast.arithmetic.ASTDiv;
@@ -78,6 +75,8 @@ public interface Exp {
         T visit(ASTSecond astSecond);
 
         T visit(ASTLast astLast);
+
+        T visit(ASTMatch astMatch);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

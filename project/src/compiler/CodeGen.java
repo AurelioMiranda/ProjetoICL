@@ -5,10 +5,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Map;
 
-import ast.tuples.ASTFirst;
-import ast.tuples.ASTLast;
-import ast.tuples.ASTPair;
-import ast.tuples.ASTSecond;
+import ast.tuples.*;
 import ast.references.*;
 import ast.*;
 import ast.arithmetic.ASTAdd;
@@ -234,6 +231,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTLast astLast) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTMatch astMatch) {
 		return null;
 	}
 

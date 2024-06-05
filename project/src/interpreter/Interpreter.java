@@ -8,10 +8,7 @@ import ast.arithmetic.ASTSub;
 import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
-import ast.tuples.ASTFirst;
-import ast.tuples.ASTLast;
-import ast.tuples.ASTPair;
-import ast.tuples.ASTSecond;
+import ast.tuples.*;
 import ast.identifiers.ASTIdentifier;
 import ast.identifiers.ASTLet;
 import ast.logical.*;
@@ -401,6 +398,11 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
             return ((TupleValue) t1).getLast();
         }
         throw new RuntimeException("last can only be applied to Tuple.");
+    }
+
+    @Override
+    public Value visit(ASTMatch astMatch) { //TODO: continue
+        return null;
     }
 
 
