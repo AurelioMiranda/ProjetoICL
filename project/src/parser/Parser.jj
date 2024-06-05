@@ -71,6 +71,7 @@ TOKEN : /* OPERATORS */
 | < COMMA: "," >
 | < FIRST: "first" >
 | < SECOND: "second" >
+| < LAST: "last" >
 }
 
 TOKEN :
@@ -100,14 +101,16 @@ Exp decl() :
 }
 
 Exp control_flow() :
-{ Exp e,b,eb; }
+{ Exp e,b,eb, pair; }
 {
   <IF> e = decl() <THEN> b = decl() [<ELSE> eb = decl() <END>  { return new ASTElse(e, b, eb); }]
       <END>{ return new ASTIf(e, b); }
   | <WHILE> e = decl() <DO> b = decl() { return new ASTWhile(e, b); }
-  | <LBRAC> e = decl() <COMMA> b = decl() <RBRAC> { return new ASTPair(e, b); }
+  | <LBRAC> e = decl() {pair = new ASTPair(e);}
+        (<COMMA> b = decl() {((ASTPair)pair).addValue(b);} )* <RBRAC> { return pair; }
   | <FIRST> e = decl() { return new ASTFirst(e); }
   | <SECOND> e = decl() { return new ASTSecond(e); }
+  | <LAST> e = decl() { return new ASTLast(e); }
   |  e = assignment() { return e; }
 }
 
@@ -172,6 +175,7 @@ Exp Fact() :
  | <MINUS> e = Fact() { return new ASTSub(new ASTInt(0),e); }
  | <NEG> e = Fact() { return new ASTNeg(e); }
  | <LPAR> e = logic() <RPAR> { return e; }
+ | <UNIT> { return new ASTBool(true); } //TODO: unit
  | <NEW> <LPAR> e = logic() <RPAR> { return new ASTNew(e); } // Handling reference creation
  | <DER> e = Fact() { return new ASTDeref(e); } // Handling dereference
  | x = <ID> { return new ASTIdentifier(x.image); }

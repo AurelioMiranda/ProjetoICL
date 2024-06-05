@@ -3,13 +3,19 @@ package ast.extra;
 import ast.Exp;
 import interpreter.Env;
 
-public class ASTPair implements ast.Exp {
-    public Exp first;
-    public Exp second;
+import java.util.ArrayList;
+import java.util.List;
 
-    public ASTPair (Exp p1, Exp p2){
-        this.first = p1;
-        this.second = p2;
+public class ASTPair implements ast.Exp {
+    public List<Exp> tupleList;
+
+    public ASTPair (Exp p1){
+        tupleList = new ArrayList<>();
+        tupleList.add(p1);
+    }
+
+    public void addValue (Exp e){
+        tupleList.add(e);
     }
 
     @Override

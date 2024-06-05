@@ -9,6 +9,7 @@ import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
 import ast.extra.ASTFirst;
+import ast.extra.ASTLast;
 import ast.extra.ASTPair;
 import ast.extra.ASTSecond;
 import ast.identifiers.ASTIdentifier;
@@ -19,7 +20,6 @@ import ast.references.ASTDeref;
 import ast.references.ASTNew;
 import interpreter.Env;
 import types.*;
-import values.ClosureValue;
 
 import java.util.Map;
 
@@ -189,13 +189,16 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTPair astPair) {
-        Type t1 = typeCheck(astPair.first, env);
-        Type t2 = typeCheck(astPair.second, env);
 
-        if (!(t1 instanceof NoneType) && !(t2 instanceof NoneType)) {
-            return t1;
+        for (Exp tupleValue : astPair.tupleList) {
+
+            Type t1 = typeCheck(tupleValue, env);
+
+            if (t1 instanceof NoneType) {
+                return NoneType.getNoneType();
+            }
         }
-        return NoneType.getNoneType();
+        return typeCheck(astPair.tupleList.get(0), env);
     }
 
     @Override
@@ -213,6 +216,18 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     @Override
     public Type visit(ASTSecond astSecond) {
         Type t1 = typeCheck(astSecond.tuple, env);
+
+        if (t1 instanceof IntType || t1 instanceof BoolType || t1 instanceof RefType
+                || t1 instanceof FunType || t1 instanceof TupleType) {
+            return t1;
+        }
+
+        return NoneType.getNoneType();
+    }
+
+    @Override
+    public Type visit(ASTLast astLast) {
+        Type t1 = typeCheck(astLast.tuple, env);
 
         if (t1 instanceof IntType || t1 instanceof BoolType || t1 instanceof RefType
                 || t1 instanceof FunType || t1 instanceof TupleType) {

@@ -1,39 +1,48 @@
 package values;
 
-public class TupleValue<V extends Value> implements Value {
-    private final V first;
-    private final V second;
+import java.util.ArrayList;
+import java.util.List;
 
-    public TupleValue(V first, V second) {
-        this.first = first;
-        this.second = second;
+public class TupleValue implements Value {
+    private List<Value> tuples;
+
+    public TupleValue() {
+        this.tuples = new ArrayList<>();
     }
 
-    public V getFirst() {
-        return first;
+    public Value getFirst() {
+        return tuples.get(0);
     }
 
-    public V getSecond() {
-        return second;
+    public Value getSecond() {
+        return tuples.get(1);
+    }
+
+    public Value getLast() {
+        return tuples.get(tuples.size()-1);
     }
 
     @Override
     public String toString() {
-        return "{" + first + ", " + second + "}";
+        return "{" + getFirst() + ", " + getSecond() + "}";
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        TupleValue<?> that = (TupleValue<?>) obj;
-        return first.equals(that.first) && second.equals(that.second);
+        TupleValue that = (TupleValue) obj;
+        return getFirst().equals(that.getFirst()) && getSecond().equals(that.getSecond());
     }
 
     @Override
     public int hashCode() {
-        int result = first.hashCode();
-        result = 31 * result + second.hashCode();
+        int result = getFirst().hashCode();
+        result = 31 * result + getSecond().hashCode();
         return result;
+    }
+
+    public void addValue(Value v1) {
+        tuples.add(v1);
     }
 }

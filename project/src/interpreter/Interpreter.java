@@ -9,6 +9,7 @@ import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
 import ast.extra.ASTFirst;
+import ast.extra.ASTLast;
 import ast.extra.ASTPair;
 import ast.extra.ASTSecond;
 import ast.identifiers.ASTIdentifier;
@@ -17,9 +18,6 @@ import ast.logical.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
-import types.NoneType;
-import types.TupleType;
-import types.Type;
 import values.*;
 
 import java.util.Map;
@@ -365,10 +363,14 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
     @Override
     public Value visit(ASTPair astPair) {
-        Value v1 = astPair.first.accept(this);
-        Value v2 = astPair.second.accept(this);
+        TupleValue tv = new TupleValue();
 
-        return new TupleValue(v1, v2);
+        for (Exp tuple: astPair.tupleList) {
+            Value v1 = tuple.accept(this);
+            tv.addValue(v1);
+        }
+
+        return tv;
     }
 
     @Override
@@ -376,7 +378,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         Value t1 = interpret(astFirst.tuple, env);
 
         if (t1 instanceof TupleValue) {
-            return ((TupleValue<?>) t1).getFirst();
+            return ((TupleValue) t1).getFirst();
         }
         throw new RuntimeException("first can only be applied to Tuple.");
     }
@@ -386,9 +388,19 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         Value t1 = interpret(astSecond.tuple, env);
 
         if (t1 instanceof TupleValue) {
-            return ((TupleValue<?>) t1).getSecond();
+            return ((TupleValue) t1).getSecond();
         }
         throw new RuntimeException("second can only be applied to Tuple.");
+    }
+
+    @Override
+    public Value visit(ASTLast astLast) {
+        Value t1 = interpret(astLast.tuple, env);
+
+        if (t1 instanceof TupleValue) {
+            return ((TupleValue) t1).getLast();
+        }
+        throw new RuntimeException("last can only be applied to Tuple.");
     }
 
 

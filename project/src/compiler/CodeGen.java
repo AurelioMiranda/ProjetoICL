@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.util.Map;
 
 import ast.extra.ASTFirst;
+import ast.extra.ASTLast;
 import ast.extra.ASTPair;
 import ast.extra.ASTSecond;
 import ast.references.*;
@@ -232,6 +233,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
+	public Void visit(ASTLast astLast) {
+		return null;
+	}
+
+	@Override
 	public Void visit(ASTIf astIf) {
 		astIf.condition.accept(this);
 		Label endLabel = new Label();
@@ -284,6 +290,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public static BasicBlock codeGen(Exp e) {
 		CodeGen cg = new CodeGen();
 		e.accept(cg);
+		System.out.println(cg.block);
 		return cg.block;
 	}
 	
