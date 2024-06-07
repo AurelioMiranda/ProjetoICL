@@ -8,6 +8,8 @@ import ast.arithmetic.ASTSub;
 import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
+import ast.string.ASTConcat;
+import ast.string.ASTString;
 import ast.tuples.*;
 import ast.identifiers.ASTIdentifier;
 import ast.identifiers.ASTLet;
@@ -238,6 +240,25 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     public Type visit(ASTMatch astMatch) { //TODO: continue
 
         return null;
+    }
+
+    @Override
+    public Type visit(ASTString astString) {
+        return StringType.getStringType();
+    }
+
+    @Override
+    public Type visit(ASTConcat astConcat) {
+
+        Type t1 = typeCheck(astConcat.arg1, env);
+        if (t1 instanceof StringType){
+            Type t2 = typeCheck(astConcat.arg2, env);
+            if (t2 instanceof StringType s2){
+                return s2;
+            }
+        }
+
+        return NoneType.getNoneType();
     }
 
     @Override

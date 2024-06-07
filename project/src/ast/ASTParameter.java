@@ -14,6 +14,7 @@ public class ASTParameter {
             case "bool" -> BoolType.getBoolType();
             case "int" -> IntType.getIntType();
             case "ref" -> RefType.getReferencedType(); //TODO: This might be an issue
+            case "string" -> StringType.getStringType();
             default -> UnitType.getUnitType();
         };
     }

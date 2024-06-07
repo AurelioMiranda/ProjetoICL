@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Map;
 
+import ast.string.ASTConcat;
+import ast.string.ASTString;
 import ast.tuples.*;
 import ast.references.*;
 import ast.*;
@@ -236,6 +238,16 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTMatch astMatch) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTString astString) {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTConcat astConcat) {
 		return null;
 	}
 

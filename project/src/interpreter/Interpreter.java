@@ -8,6 +8,8 @@ import ast.arithmetic.ASTSub;
 import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
+import ast.string.ASTConcat;
+import ast.string.ASTString;
 import ast.tuples.*;
 import ast.identifiers.ASTIdentifier;
 import ast.identifiers.ASTLet;
@@ -41,7 +43,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         if (v instanceof BoolValue v1) {
             return new BoolValue(!v1.getValue());
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("~ can only be applied to booleans.");
     }
 
     @Override
@@ -53,7 +55,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new IntValue(v1.getValue() * v2.getValue());
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Multiplication (*) can only be applied to numbers.");
     }
 
     @Override
@@ -65,7 +67,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new IntValue(v1.getValue() - v2.getValue());
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Subtraction (-) can only be applied to numbers.");
     }
 
     @Override
@@ -87,7 +89,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new BoolValue(false);
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Equals (=) can only be applied to numbers or booleans.");
     }
 
     @Override
@@ -104,7 +106,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new BoolValue(false);
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("And (&&) can only be applied to booleans.");
     }
 
     @Override
@@ -121,7 +123,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new BoolValue(false);
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Or (||) can only be applied to booleans.");
     }
 
     @Override
@@ -135,7 +137,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new BoolValue(false);
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Greater than (>) can only be applied to booleans.");
     }
 
     @Override
@@ -149,7 +151,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new BoolValue(false);
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Lesser than (<) can only be applied to booleans.");
     }
 
     @Override
@@ -163,7 +165,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new BoolValue(false);
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Greater than or equal (>=) can only be applied to booleans.");
     }
 
     @Override
@@ -177,7 +179,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new BoolValue(false);
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Lesser than or equal (<=) can only be applied to booleans.");
     }
 
     @Override
@@ -199,7 +201,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new BoolValue(false);
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Not equal (!=) can only be applied to numbers or booleans.");
     }
 
 
@@ -212,7 +214,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new IntValue(((IntValue) v1).getValue() + ((IntValue) v2).getValue());
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Addition (+) can only be applied to numbers.");
     }
 
 
@@ -228,7 +230,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
                 return new IntValue(v1.getValue() / v2.getValue());
             }
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Division (/) can only be applied to numbers.");
     }
 
 
@@ -244,8 +246,10 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
             return r1;  // Return the reference value
         } else if (v instanceof TupleValue t1) {
             return t1;
+        } else if (v instanceof StringValue t1) {
+            return t1;
         }
-        throw new ArithmeticException();
+        throw new ArithmeticException("Invalid identifier value.");
     }
 
 
@@ -403,6 +407,23 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
     @Override
     public Value visit(ASTMatch astMatch) { //TODO: continue
         return null;
+    }
+
+    @Override
+    public Value visit(ASTString astString) {
+        return new StringValue(astString.value);
+    }
+
+    @Override
+    public Value visit(ASTConcat astConcat) {
+        Value v1 = interpret(astConcat.arg1, env);
+        Value v2 = interpret(astConcat.arg2, env);
+
+        if (v1 instanceof StringValue && v2 instanceof StringValue) {
+            return new StringValue(((StringValue) v1).getValue()+((StringValue) v2).getValue());
+        }
+
+        throw new RuntimeException("concat can only be applied to Strings.");
     }
 
 

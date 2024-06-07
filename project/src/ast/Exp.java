@@ -1,5 +1,7 @@
 package ast;
 
+import ast.string.ASTConcat;
+import ast.string.ASTString;
 import ast.tuples.*;
 import ast.references.*;
 import ast.arithmetic.ASTAdd;
@@ -77,6 +79,10 @@ public interface Exp {
         T visit(ASTLast astLast);
 
         T visit(ASTMatch astMatch);
+
+        T visit(ASTString astString);
+
+        T visit(ASTConcat astConcat);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

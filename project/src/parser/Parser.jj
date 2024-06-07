@@ -12,6 +12,7 @@ import ast.identifiers.*;
 import ast.logical.*;
 import ast.references.*;
 import ast.tuples.*;
+import ast.string.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,8 @@ TOKEN : /* OPERATORS */
 | < LAST: "last" >
 | < MATCH: "match" >
 | < WITH: "with">
+| < QUOTE: "\"">
+| < CONCAT: "concat">
 }
 
 TOKEN :
@@ -115,6 +118,7 @@ Exp control_flow() :
   | <FIRST> e = decl() { return new ASTFirst(e); }
   | <SECOND> e = decl() { return new ASTSecond(e); }
   | <LAST> e = decl() { return new ASTLast(e); }
+  | <CONCAT> <LPAR> e = Expr() <COMMA> b = Expr() <RPAR> { return new ASTConcat(e, b); }
   |  e = assignment() { return e; }
 }
 
@@ -174,12 +178,13 @@ Exp Fact() :
 {
   x = <Num>
     { return new ASTInt(Integer.parseInt(x.image)); }
+ | <QUOTE> x = <ID> <QUOTE> { return new ASTString(x.image); }
  | <TRUE> { return new ASTBool(true); }
  | <FALSE> { return new ASTBool(false); }
  | <MINUS> e = Fact() { return new ASTSub(new ASTInt(0),e); }
  | <NEG> e = Fact() { return new ASTNeg(e); }
  | <LPAR> e = logic() <RPAR> { return e; }
- | <UNIT> { return new ASTBool(true); } //TODO: unit
+ | <UNIT> { return new ASTBool(true); }
  | <NEW> <LPAR> e = logic() <RPAR> { return new ASTNew(e); } // Handling reference creation
  | <DER> e = Fact() { return new ASTDeref(e); } // Handling dereference
  | x = <ID> { return new ASTIdentifier(x.image); }

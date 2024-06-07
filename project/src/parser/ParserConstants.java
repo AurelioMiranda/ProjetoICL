@@ -95,13 +95,21 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int LAST = 45;
   /** RegularExpression Id. */
-  int INT = 46;
+  int MATCH = 46;
   /** RegularExpression Id. */
-  int DIGIT = 47;
+  int WITH = 47;
   /** RegularExpression Id. */
-  int ID = 48;
+  int QUOTE = 48;
   /** RegularExpression Id. */
-  int LETTER = 49;
+  int CONCAT = 49;
+  /** RegularExpression Id. */
+  int INT = 50;
+  /** RegularExpression Id. */
+  int DIGIT = 51;
+  /** RegularExpression Id. */
+  int ID = 52;
+  /** RegularExpression Id. */
+  int LETTER = 53;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -154,6 +162,10 @@ public interface ParserConstants {
     "\"first\"",
     "\"second\"",
     "\"last\"",
+    "\"match\"",
+    "\"with\"",
+    "\"\\\"\"",
+    "\"concat\"",
     "<INT>",
     "<DIGIT>",
     "<ID>",

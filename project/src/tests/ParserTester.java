@@ -102,6 +102,7 @@ public class ParserTester {
 	@Test
 	public void test_references() throws Exception {
 		testCase(new RefValue(0), "new(7) \n");
+		testCase(new RefValue(4), "!(new(4)) \n");
 		testCase(new IntValue(13), "let x = new(9) in !x + 4 \n");
 		testCase(new BoolValue(false), "let x = new(true) in !x && false \n");
 		testCase(new IntValue(4), "let x = fun (z:ref) -> !z in x(new(4)) \n"); //TODO: fix this
@@ -118,13 +119,21 @@ public class ParserTester {
 	}
 
 	@Test
-	public void test_extras() throws Exception {
+	public void test_tuples() throws Exception {
 		testCase(new IntValue(5), "first{5,9} \n");
 		testCase(new IntValue(5), "second{true,5} \n");
 		testCase(new BoolValue(false), "second{5+5,true&&false} \n");
 		testCase(new IntValue(5), "let x = {5,6} in first(x) \n");
 		testCase(new BoolValue(true), "let x = {5, {false, true}} in second second(x) \n");
 		testCase(new IntValue(7), "let x = {5, {{5, {false, 7}}, true}} in second second first second(x) \n");
+	}
+
+	@Test
+	public void test_strings() throws Exception {
+		testCase(new StringValue("thisthat"), "concat(\"this\", \"that\") \n");
+		testCase(new StringValue("this"), "let x = \"this\" in x \n");
+		testCase(new StringValue("thisdat"), "let x = \"this\" in concat(x,\"dat\") \n");
+		testCase(new StringValue("thisnotthat"), "let x = fun (z:string) -> concat(z,\"notthat\") in x(\"this\") \n");
 	}
 }
 
