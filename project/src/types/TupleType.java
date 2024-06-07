@@ -1,18 +1,25 @@
 package types;
 
+import java.util.List;
+
 public class TupleType implements Type {
 
-    public static final TupleType singleton = new TupleType();
+    private List<Type> elementTypes;
 
-    private TupleType() {}
+    public TupleType(List<Type> elementTypes) {
+        this.elementTypes = elementTypes;
+    }
 
-    public static TupleType getInstance(){
-        return singleton;
+    public List<Type> getElementTypes() {
+        return elementTypes;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        TupleType that = (TupleType) obj;
+        return elementTypes.equals(that.elementTypes);
     }
 
     @Override

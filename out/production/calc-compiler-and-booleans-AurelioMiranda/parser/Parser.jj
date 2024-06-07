@@ -98,15 +98,15 @@ Exp decl() :
 { Exp e, b; List<ASTParameter> params = new ArrayList<ASTParameter>();
  Map<String, Exp> variables = new HashMap<String, Exp>(); Token x, id, type; }
 {
-  <FUN> ( <LPAR> id = <ID> <COLON> type = <ID> <RPAR> { params.add(new ASTParameter(id.image, type.image)); } )*
+  <FUN> ( <LPAR> id = <ID> <COLON> type = <ID> <RPAR> { params.add(new ASTParameter(id.image, type.image)); } )+
     <ARROW> e = decl() { return new ASTClosure(params, e); }
- |  <LET> ( x = < ID > < EQ > e = decl() { variables.put(x.image, e); } )*
+ |  <LET> ( x = < ID > < EQ > e = decl() { variables.put(x.image, e); } )+
         <IN > b = decl() { return new ASTLet(variables, b); }
  |  e = control_flow() { return e; }
 }
 
 Exp control_flow() :
-{ Exp e,b,eb, pair; Token id, x;
+{ Exp e,b,eb, pair, match; Token id, d, x;
  List<String> ids = new ArrayList<String>();}
 {
   <IF> e = decl() <THEN> b = decl() [<ELSE> eb = decl() <END>  { return new ASTElse(e, b, eb); }]
@@ -114,7 +114,10 @@ Exp control_flow() :
   | <WHILE> e = decl() <DO> b = decl() { return new ASTWhile(e, b); }
   | <LBRAC> e = decl() {pair = new ASTPair(e);}
         (<COMMA> b = decl() {((ASTPair)pair).addValue(b);} )* <RBRAC> { return pair; }
-  | <MATCH> id = <ID> <WITH> ( id = <ID> ) //TODO: fix
+  | <MATCH> id = <ID> { match = new ASTMatch(id.image); }
+        <WITH> d = <ID> { ((ASTMatch)match).addValue(d.image); }
+        (<COMMA> x = <ID> {{ ((ASTMatch)match).addValue(x.image); }})*
+        <ARROW> e = decl() { ((ASTMatch)match).addBody(e); } { return match; }
   | <FIRST> e = decl() { return new ASTFirst(e); }
   | <SECOND> e = decl() { return new ASTSecond(e); }
   | <LAST> e = decl() { return new ASTLast(e); }

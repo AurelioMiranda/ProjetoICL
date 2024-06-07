@@ -16,13 +16,13 @@ public class ParserTester {
 				Assert.assertTrue(true);
 				return;
 			}
-			Assert.assertTrue(false);
+			Assert.fail();
 		}
 		Assert.assertEquals(expected, Console.accept(expression));
 	}
 	
 	private void testNegativeCase(String expression) throws ParseException {
-		//Assert.assertFalse(Console.accept(expression));
+		Assert.assertEquals(Console.accept(expression), new BoolValue(false));
 	}
 	
 	@Test
@@ -84,6 +84,16 @@ public class ParserTester {
 		testCase(new IntValue(21), "let x = 9 in let y = 7 in let z = 5 in z + x + y \n");
 		testCase(new IntValue(17), "let x = 9 y = 8 in x + y \n");
 		testCase(new BoolValue(false), "let x = 9 y = true in x > 9 && y \n");
+		testNegativeCase("let x = 9 in x + y \n");
+		testNegativeCase("let x = 9 x + 2 \n");
+		testNegativeCase("let( x = 9 in x + 2 ) \n");
+		testNegativeCase("let 1variable = 9 in 1variable + 2 \n");
+		testNegativeCase("let x = 9 in x || 2 \n");
+		testNegativeCase("let x = in x + 2 \n");
+		testNegativeCase("let x = 9 x + 2 \n");
+		testNegativeCase("let x = 9 \n");
+		testNegativeCase("let x = 9 in let y = 7 x + y \n");
+
 	}
 
 	@Test
@@ -97,15 +107,35 @@ public class ParserTester {
 		testCase(new IntValue(10), "let x = 9 in if x != 8 then x + 1 end \n");
 		testCase(new IntValue(5), "if false then 2+2 else 5 end \n");
 		testCase(new IntValue(4), "if true then 2+2 else 5 end \n");
+		testNegativeCase("if true then ~5 end \n");
+		testNegativeCase("let x = 5 in x && true \n");
+		testNegativeCase("if 2 + true then 3 end \n");
+		testNegativeCase("if false then 2 + 2 else ~5 end \n");
+		testNegativeCase("if 3 < 2 then true + false end \n");
+		testNegativeCase("let x = true in x + 1 \n");
+		testNegativeCase("if 2 < 5 then 3 && 4 end \n");
+		testNegativeCase("if true then let x = 5 in x && true end \n");
+		testNegativeCase("if 2 < 5 then let x = 9 in 5 && x end \n");
+		testNegativeCase("let x = false in if x != 8 then x + 1 end \n");
+		testNegativeCase("if false then 2 + 2 else true && 5 end \n");
+		testNegativeCase("if true then 2 < 5 else 5 + false end \n");
+
 	}
 
 	@Test
 	public void test_references() throws Exception {
 		testCase(new RefValue(0), "new(7) \n");
-		testCase(new RefValue(4), "!(new(4)) \n");
+		testCase(new IntValue(5), "!(new(5)) \n");
 		testCase(new IntValue(13), "let x = new(9) in !x + 4 \n");
 		testCase(new BoolValue(false), "let x = new(true) in !x && false \n");
 		testCase(new IntValue(4), "let x = fun (z:ref) -> !z in x(new(4)) \n"); //TODO: fix this
+		testNegativeCase("!(5) \n");
+		testNegativeCase("let x = 9 in !x + 4 \n");
+		testNegativeCase("let x = new(5) in x + true \n");
+		testNegativeCase("let x = new(5) in !x && 4 \n");
+		testNegativeCase("let x = new(true) in !x + 5 \n");
+		testNegativeCase("new(true) + 3 \n");
+		testNegativeCase("new(5) && false \n");
 	}
 
 	@Test
@@ -116,6 +146,11 @@ public class ParserTester {
 		testCase(new UnitValue(), "let x = fun (z:bool) -> if 2<5&&z then let x = 9 in 5 + x end in x(false) \n");
 		testCase(new IntValue(14), "let x = fun (z:bool) -> if 2<5&&z then let x = 9 in 5 + x end in x(true) \n");
 		testCase(new IntValue(5), "let x = fun (z:bool) -> if z then 1 else 2+2 end in if x(true)<5 then 1+4 else 5 end \n");
+		testNegativeCase("let x = fun (y:int) -> y + true in x(3) \n");
+		testNegativeCase("let x = fun (z:bool) -> z + 1 in x(false) \n");
+		testNegativeCase("let x = fun (z:int) -> z && true in x(3) \n");
+		testNegativeCase("let x = fun (y:int) -> y + 2 in x(true) \n");
+		testNegativeCase("let x = fun (y:int) -> y + 2 in x(3) && false \n");
 	}
 
 	@Test
@@ -126,6 +161,15 @@ public class ParserTester {
 		testCase(new IntValue(5), "let x = {5,6} in first(x) \n");
 		testCase(new BoolValue(true), "let x = {5, {false, true}} in second second(x) \n");
 		testCase(new IntValue(7), "let x = {5, {{5, {false, 7}}, true}} in second second first second(x) \n");
+		testCase(new IntValue(9), "let x = {2, 3, 4} in match x with y, d, c -> y + d + c \n");
+		testCase(new IntValue(8), "let x = {2, 3, 4} in match x with y, d, c -> if y < d then c + c end \n");
+		testCase(new IntValue(-1), "let x = {2, 3, false} in match x with y, d, c -> if c then y + d else y - d end \n");
+		testCase(new IntValue(5), "let x = {2, 3, true} in match x with y, d, c -> if c then y + d else y - d end \n");
+		testCase(new IntValue(5), "let x = {2, 3, true} in match x with y, d, c -> if c then y + d else y - d end \n");
+		testNegativeCase("let x = {5, {false, true}} in first(second(x)) \n");
+		testNegativeCase("let x = {5, {{5, {false, 7}}, true}} in first(second(first(second(x)))) \n");
+		testNegativeCase("let x = {2, true, 4} in match x with y, d, c -> y + d + c \n");
+		testNegativeCase("let x = {2, 3, 4} in match x with y, d -> y + d \n");
 	}
 
 	@Test
@@ -134,6 +178,12 @@ public class ParserTester {
 		testCase(new StringValue("this"), "let x = \"this\" in x \n");
 		testCase(new StringValue("thisdat"), "let x = \"this\" in concat(x,\"dat\") \n");
 		testCase(new StringValue("thisnotthat"), "let x = fun (z:string) -> concat(z,\"notthat\") in x(\"this\") \n");
+		testCase(new StringValue("disthat"), "let x = {\"dis\", \"that\"} in match x with y, z -> concat(y, z) \n");
+		testNegativeCase("concat(\"this\", 5) \n");
+		testNegativeCase("concat(true, \"that\") \n");
+		testNegativeCase("let x = 5 in concat(x, \"dat\") \n");
+		testNegativeCase("let x = fun (z:int) -> concat(z,\"notthat\") in x(3) \n");
+
 	}
 }
 

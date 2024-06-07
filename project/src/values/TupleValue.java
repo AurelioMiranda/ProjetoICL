@@ -35,14 +35,11 @@ public class TupleValue implements Value {
         return getFirst().equals(that.getFirst()) && getSecond().equals(that.getSecond());
     }
 
-    @Override
-    public int hashCode() {
-        int result = getFirst().hashCode();
-        result = 31 * result + getSecond().hashCode();
-        return result;
-    }
-
     public void addValue(Value v1) {
         tuples.add(v1);
+    }
+
+    public List<Value> getValues() {
+        return tuples;
     }
 }

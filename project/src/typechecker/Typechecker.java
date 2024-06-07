@@ -20,6 +20,8 @@ import ast.references.ASTNew;
 import interpreter.Env;
 import types.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -189,6 +191,8 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     @Override
     public Type visit(ASTPair astPair) {
 
+        List<Type> types = new ArrayList<>();
+
         for (Exp tupleValue : astPair.tupleList) {
 
             Type t1 = typeCheck(tupleValue, env);
@@ -196,8 +200,9 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
             if (t1 instanceof NoneType) {
                 return NoneType.getNoneType();
             }
+            types.add(t1);
         }
-        return typeCheck(astPair.tupleList.get(0), env);
+        return new TupleType(types);
     }
 
     @Override
@@ -237,9 +242,24 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     }
 
     @Override
-    public Type visit(ASTMatch astMatch) { //TODO: continue
+    public Type visit(ASTMatch astMatch) {
+        Type tupleType = env.find(astMatch.tupleId);
 
-        return null;
+        if ((tupleType instanceof TupleType tuple)) {
+            if (tuple.getElementTypes().size() == astMatch.tupleIds.size()) {
+                env = env.beginScope();
+                for (int i = 0; i < astMatch.tupleIds.size(); i++) {
+                    String varName = astMatch.tupleIds.get(i);
+                    Type varType = tuple.getElementTypes().get(i);
+                    env.bind(varName, varType);
+                }
+                Type bodyType = typeCheck(astMatch.body, env);
+                env = env.endScope();
+
+                return bodyType;
+            }
+        }
+        return NoneType.getNoneType();
     }
 
     @Override
@@ -251,9 +271,9 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     public Type visit(ASTConcat astConcat) {
 
         Type t1 = typeCheck(astConcat.arg1, env);
-        if (t1 instanceof StringType){
+        if (t1 instanceof StringType) {
             Type t2 = typeCheck(astConcat.arg2, env);
-            if (t2 instanceof StringType s2){
+            if (t2 instanceof StringType s2) {
                 return s2;
             }
         }

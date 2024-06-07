@@ -405,8 +405,25 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
     }
 
     @Override
-    public Value visit(ASTMatch astMatch) { //TODO: continue
-        return null;
+    public Value visit(ASTMatch astMatch) {
+        Value tupleValue = env.find(astMatch.tupleId);
+
+        if (tupleValue instanceof TupleValue) {
+            TupleValue tuple = (TupleValue) tupleValue;
+
+            env = env.beginScope();
+            for (int i = 0; i < astMatch.tupleIds.size(); i++) {
+                String varName = astMatch.tupleIds.get(i);
+                Value varValue = tuple.getValues().get(i);
+                env.bind(varName, varValue);
+            }
+            Value bodyValue = interpret(astMatch.body, env);
+            env = env.endScope();
+
+            return bodyValue;
+        } else {
+            throw new RuntimeException("Match operation requires a tuple value.");
+        }
     }
 
     @Override
