@@ -58,6 +58,11 @@ public class Parser implements ParserConstants {
     throw new Error("Missing return statement in function");
   }
 
+/*Exp sequence() :
+ { Exp e1, e2; }
+ {
+   e1 = decl() ( <SEMICOLON> e2 = sequence() { e1 = new ASTSeq(e1, e2); } )* { return e1; }
+ }*/
   final public Exp decl() throws ParseException {
   Exp e, b; List<ASTParameter> params = new ArrayList<ASTParameter>();
  Map<String, Exp> variables = new HashMap<String, Exp>(); Token x, id, type;
@@ -166,7 +171,8 @@ public class Parser implements ParserConstants {
       e = decl();
       jj_consume_token(DO);
       b = decl();
-                                         {if (true) return new ASTWhile(e, b);}
+      jj_consume_token(END);
+                                               {if (true) return new ASTWhile(e, b);}
       break;
     case LBRAC:
       jj_consume_token(LBRAC);

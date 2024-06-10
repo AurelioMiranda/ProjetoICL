@@ -97,6 +97,12 @@ Exp Start() :
   | <EOF> { throw new ParseException("End of File encountered. Stopping Parsing."); }
 }
 
+/*Exp sequence() :
+ { Exp e1, e2; }
+ {
+   e1 = decl() ( <SEMICOLON> e2 = sequence() { e1 = new ASTSeq(e1, e2); } )* { return e1; }
+ }*/
+
 Exp decl() :
 { Exp e, b; List<ASTParameter> params = new ArrayList<ASTParameter>();
  Map<String, Exp> variables = new HashMap<String, Exp>(); Token x, id, type; }
@@ -114,7 +120,7 @@ Exp control_flow() :
 {
   <IF> e = decl() <THEN> b = decl() [<ELSE> eb = decl() <END>  { return new ASTElse(e, b, eb); }]
       <END>{ return new ASTIf(e, b); }
-  | <WHILE> e = decl() <DO> b = decl() { return new ASTWhile(e, b); }
+  | <WHILE> e = decl() <DO> b = decl() <END> { return new ASTWhile(e, b); }
   | <LBRAC> e = decl() {pair = new ASTPair(e);}
         (<COMMA> b = decl() {((ASTPair)pair).addValue(b);} )* <RBRAC> { return pair; }
   | <MATCH> id = <ID> { match = new ASTMatch(id.image); }

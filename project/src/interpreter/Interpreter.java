@@ -19,6 +19,7 @@ import ast.logical.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
+import utils.Pair;
 import values.*;
 
 import java.util.Map;
@@ -297,15 +298,41 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
     }
 
     @Override
-    public Value visit(ASTWhile astWhile) { //TODO: while needs memory to work
-        Value cond = interpret(astWhile.condition, env);
-        if (cond instanceof BoolValue v1) {
-            if (v1.getValue()) {
-                return interpret(new ASTWhile(astWhile.condition, astWhile.body), env);
+    public Value visit(ASTWhile astWhile) {
+        Env<Value> oldEnv = env;
+        return evaluateWhile(astWhile, env, memory);
+    }
+
+    private Value evaluateWhile(ASTWhile astWhile, Env<Value> env, Memory mem) {
+        while (true) {
+            Pair<Value, Memory> conditionResult = interpretWithMemory(astWhile.condition, env, mem);
+            Value conditionValue = conditionResult.getFirst();
+            mem = conditionResult.getSecond();
+
+            if (!(conditionValue instanceof BoolValue) || !((BoolValue) conditionValue).getValue()) {
+                break;
             }
-            return new UnitValue();
+            Pair<Value, Memory> bodyResult = interpretWithMemory(astWhile.body, env, mem);
+            mem = bodyResult.getSecond();
         }
-        throw new ArithmeticException();
+        return new UnitValue();
+    }
+
+    private Pair<Value, Memory> interpretWithMemory(Exp exp, Env<Value> env, Memory mem) {
+        Interpreter interpreter = new Interpreter();
+        interpreter.env = env;
+        interpreter.memory = mem;
+        Value result = exp.accept(interpreter);
+        return new Pair<>(result, interpreter.memory);
+    }
+
+
+    private Pair<Value, Memory> interpret(Exp e, Env<Value> env, Memory mem) {
+        Interpreter i = new Interpreter();
+        i.env = env;
+        i.memory = mem;
+        Value result = e.accept(i);
+        return new Pair<>(result, i.memory);
     }
 
     @Override
@@ -459,6 +486,11 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         return new UnitValue();
     }
 
+    @Override
+    public Value visit(ASTSeq astSeq) {
+        interpret(astSeq.first, env);
+        return interpret(astSeq.second, env);
+    }
 
     public static Value interpret(Exp e, Env<Value> env) {
         Interpreter i = new Interpreter();

@@ -89,6 +89,8 @@ public interface Exp {
         T visit(ASTPrint astPrint);
 
         T visit(ASTPrintln astPrintln);
+
+        T visit(ASTSeq astSeq);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

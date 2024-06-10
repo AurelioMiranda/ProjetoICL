@@ -1,0 +1,3 @@
+@echo off
+echo Running Console...
+java -jar Console.jar

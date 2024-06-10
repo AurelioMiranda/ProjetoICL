@@ -12,19 +12,6 @@
  ;    1 - the PrintStream object held in java.lang.out
 sipush 1
 sipush 0
-if_icmpne L0
-getstatic java/lang/System/out Ljava/io/PrintStream;
-sipush 5
-invokestatic java/lang/String/valueOf(I)Ljava/lang/String;
-invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V
-goto L1
-L0:
-getstatic java/lang/System/out Ljava/io/PrintStream;
-sipush 5
-sipush 5
-iadd
-invokestatic java/lang/String/valueOf(I)Ljava/lang/String;
-invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V
-L1:
+iand
 return
 .end method

@@ -1,26 +1,26 @@
 package types;
 
 public class RefType implements Type {
-    private static Type referencedType;
+    private final Type referencedType;
 
     public RefType(Type referencedType) {
         this.referencedType = referencedType;
     }
 
-    public static Type getReferencedType() {
+    public Type getReferencedType() {
         return referencedType;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (!(obj instanceof RefType)) return false;
         RefType refType = (RefType) obj;
         return referencedType.equals(refType.referencedType);
     }
 
     @Override
     public String toString() {
-        return "Ref(" + referencedType.toString() + ")";
+        return "Ref(" + referencedType + ")";
     }
 }

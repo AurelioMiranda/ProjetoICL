@@ -302,6 +302,12 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     }
 
     @Override
+    public Type visit(ASTSeq astSeq) {
+        typeCheck(astSeq.first, env);
+        return typeCheck(astSeq.second, env);
+    }
+
+    @Override
     public Type visit(ASTLet astLet) {
         env = env.beginScope();
         for (Map.Entry<String, Exp> entry : astLet.variables.entrySet()) {
@@ -340,11 +346,18 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTWhile astWhile) {
-        Type cond = typeCheck(astWhile.condition, env);
-        if (cond instanceof BoolType) {
-            return typeCheck(astWhile.body, env);
+        Env<Type> oldEnv = env;
+        Type t1 = typeCheck(astWhile.condition, env);
+        if (!(t1 instanceof BoolType)) {
+            env = oldEnv;
+            return NoneType.getNoneType();
         }
-        return NoneType.getNoneType();
+        Type t2 = typeCheck(astWhile.body, env);
+        env = oldEnv;
+        if (t2 instanceof NoneType) {
+            return NoneType.getNoneType();
+        }
+        return UnitType.getUnitType();
     }
 
     @Override
@@ -378,23 +391,17 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTAssign astAssign) {
-        // Type check the LHS expression E1
         Type lhsType = typeCheck(astAssign.getLhs(), env);
 
-        // Type check the RHS expression E2
         Type rhsType = typeCheck(astAssign.getRhs(), env);
 
-        // Ensure the LHS is a RefType
         if (lhsType instanceof RefType) {
-            // Ensure the RHS type matches the type referenced by the LHS
             if (rhsType.equals(((RefType) lhsType).getReferencedType())) {
-                // Return the RHS type as the result of the assignment
                 return rhsType;
             } else {
                 throw new RuntimeException("Type mismatch in assignment: " + rhsType + " cannot be assigned to " + lhsType);
             }
         } else {
-            // LHS must be a reference type
             throw new RuntimeException("Left-hand side of assignment must be a reference type.");
         }
 

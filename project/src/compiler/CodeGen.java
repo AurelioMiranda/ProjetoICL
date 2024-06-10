@@ -279,6 +279,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
     }
 
     @Override
+    public Void visit(ASTSeq astSeq) {
+        return null;
+    }
+
+    @Override
     public Void visit(ASTWhile astWhile) {
         return null;
     }

@@ -126,6 +126,7 @@ public class ParserTester {
         testCase(new IntValue(5), "!(new(5)) \n");
         testCase(new IntValue(13), "let x = new(9) in !x + 4 \n");
         testCase(new BoolValue(false), "let x = new(true) in !x && false \n");
+        testCase(new IntValue(3), "let x = new(5) in x:=3 \n");
         //testCase(new IntValue(4), "let x = fun (z:ref) -> !z in x(new(4)) \n"); // references + functions = bad
         testNegativeCase("!(5) \n");
         testNegativeCase("let x = 9 in !x + 4 \n");
