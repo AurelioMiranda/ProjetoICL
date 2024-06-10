@@ -11,6 +11,7 @@ import ast.control_flow.ASTWhile;
 import ast.print.ASTPrint;
 import ast.print.ASTPrintln;
 import ast.string.ASTConcat;
+import ast.string.ASTSplit;
 import ast.string.ASTString;
 import ast.tuples.*;
 import ast.identifiers.ASTIdentifier;
@@ -22,6 +23,8 @@ import ast.references.ASTNew;
 import utils.Pair;
 import values.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -457,7 +460,9 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
     @Override
     public Value visit(ASTString astString) {
-        return new StringValue(astString.value);
+        int lastCharIndex = astString.value.length() - 1;
+        String modifiedString = astString.value.substring(1, lastCharIndex);
+        return new StringValue(modifiedString);
     }
 
     @Override
@@ -490,6 +495,25 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
     public Value visit(ASTSeq astSeq) {
         interpret(astSeq.first, env);
         return interpret(astSeq.second, env);
+    }
+
+    @Override
+    public Value visit(ASTSplit astSplit) {
+
+        Value v1 = interpret(astSplit.arg1, env);
+        Value v2 = interpret(astSplit.arg2, env);
+
+        if (v1 instanceof StringValue s1 && v2 instanceof StringValue s2) {
+            TupleValue tl = new TupleValue();
+
+            for (String s: s1.getValue().split(s2.getValue())) {
+                tl.addValue(new StringValue(s));
+            }
+
+            return tl;
+        }
+
+        throw new RuntimeException("split can only be applied to Strings.");
     }
 
     public static Value interpret(Exp e, Env<Value> env) {

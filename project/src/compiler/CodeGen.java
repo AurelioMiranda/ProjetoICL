@@ -1,5 +1,6 @@
 package compiler;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -8,6 +9,7 @@ import java.util.Map;
 import ast.print.ASTPrint;
 import ast.print.ASTPrintln;
 import ast.string.ASTConcat;
+import ast.string.ASTSplit;
 import ast.string.ASTString;
 import ast.tuples.*;
 import ast.references.*;
@@ -40,12 +42,17 @@ import target.logical.IOr;
 import target.memory.IAlloc;
 import target.memory.ILoad;
 import target.memory.IStore;
+import typechecker.Typechecker;
+import types.BoolType;
+import types.IntType;
+import types.Type;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
     BasicBlock block = new BasicBlock();
 
+    public CompEnv env;
 
     @Override
     public Void visit(ASTInt i) {
@@ -114,7 +121,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
         astEq.e2.accept(this);
         String l1 = NameGenerator.genLabel();
         Label L1 = new Label(l1);
-        block.addInstruction(new INEq());
+        block.addInstruction(new INEq(L1));
         return addCompInstruction(L1);
     }
 
@@ -134,8 +141,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
         astLt.e2.accept(this);
         String l1 = NameGenerator.genLabel();
         Label L1 = new Label(l1);
-        block.addInstruction(new ILt());
-        return addCompInstruction(L1);
+        block.addInstruction(new ILt(L1));
+        return addReverseCompInstruction(L1);
     }
 
     @Override
@@ -144,8 +151,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
         astGrOrEq.e2.accept(this);
         String l1 = NameGenerator.genLabel();
         Label L1 = new Label(l1);
-        block.addInstruction(new IGrOrEq());
-        return addCompInstruction(L1);
+        block.addInstruction(new IGrOrEq(L1));
+        return addReverseCompInstruction(L1);
     }
 
     @Override
@@ -154,8 +161,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
         astLtOrEq.e2.accept(this);
         String l1 = NameGenerator.genLabel();
         Label L1 = new Label(l1);
-        block.addInstruction(new ILtOrEq());
-        return addCompInstruction(L1);
+        block.addInstruction(new ILtOrEq(L1));
+        return addReverseCompInstruction(L1);
     }
 
     @Override
@@ -164,7 +171,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
         astNEq.e2.accept(this);
         String l1 = NameGenerator.genLabel();
         Label L1 = new Label(l1);
-        block.addInstruction(new INEq());
+        block.addInstruction(new IEq(L1));
         return addCompInstruction(L1);
     }
 
@@ -210,35 +217,45 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
     @Override
     public Void visit(ASTIdentifier astIdentifier) {
-        block.addInstruction(new ALoad(0/*astIdentifier.getName()*/)); //TODO: fix this
+        //block.addInstruction(new ALoad(0/*astIdentifier.getName()*/)); //TODO: fix this
         return null;
     }
 
     @Override
     public Void visit(ASTLet astLet) {
         String frameId = generateFrameId();
-        block.addInstruction(new New(frameId));
+        String type = getType(astLet.type);
+
+        try {
+            generateFrameFile(frameId, type);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        String newFrameId = "frame_" + frameId;
+
+        block.addInstruction(new New(newFrameId));
         block.addInstruction(new Dup());
-        block.addInstruction(new InvokeSpecial(frameId + "/<init>()V"));
+        block.addInstruction(new InvokeSpecial(newFrameId + "/<init>()V"));
         block.addInstruction(new Dup());
         block.addInstruction(new ALoad(0));
-        block.addInstruction(new PutField(frameId + "/SL", "Lframe_prev;"));
+        block.addInstruction(new PutField(newFrameId + "/SL", "Ljava/lang/Object;"));
         block.addInstruction(new AStore(0));
+
 
         int i = 0;
         for (Map.Entry<String, Exp> entry : astLet.variables.entrySet()) {
-            entry.getValue().accept(this);
             block.addInstruction(new ALoad(0));
-            block.addInstruction(new PutField(frameId + "/loc_" + i, getType(entry.getValue())));
+            entry.getValue().accept(this);
+            block.addInstruction(new PutField(newFrameId + "/loc_" + i, type));
             i++;
         }
 
+        block.addInstruction(new ALoad(0));
+        block.addInstruction(new GetField(newFrameId + "/loc_0", type));
+
         astLet.body.accept(this);
 
-        block.addInstruction(new ALoad(0));
-        block.addInstruction(new CheckCast(frameId));
-        block.addInstruction(new GetField(frameId + "/SL", "Lframe_prev;"));
-        block.addInstruction(new AStore(0));
         return null;
     }
 
@@ -261,7 +278,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
     @Override
     public Void visit(ASTPrint astPrint) {
-        block.addInstruction(new SoutPrintStream());
         String type = "I";//getType(astPrint.exp);
         astPrint.exp.accept(this);
         block.addInstruction(new typeToString(type));
@@ -271,8 +287,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
     @Override
     public Void visit(ASTPrintln astPrintln) {
-        block.addInstruction(new SoutPrintStream());
-        String type = getType(astPrintln.exp);
+        String type = getType(astPrintln.type);
         astPrintln.exp.accept(this);
         block.addInstruction(new PrintLn(type));
         return null;
@@ -280,6 +295,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
     @Override
     public Void visit(ASTSeq astSeq) {
+        return null;
+    }
+
+    @Override
+    public Void visit(ASTSplit astSplit) {
         return null;
     }
 
@@ -363,7 +383,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
                  .limit locals 10
                  .limit stack 256
                  ; setup local variables:
-                 ;    1 - the PrintStream object held in java.lang.out				          
+                 ;    1 - the PrintStream object held in java.lang.out	
+                 getstatic java/lang/System/out Ljava/io/PrintStream;			          
                 """;
         String footer =
                 """
@@ -389,14 +410,26 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
         return null;
     }
 
-    private String generateFrameId() {
-        return "frame_" + System.currentTimeMillis();
+    private Void addReverseCompInstruction(Label l1) {
+        block.addInstruction(new SIPush(0));
+        String l2 = NameGenerator.genLabel();
+        Label L2 = new Label(l2);
+        block.addInstruction(new GoTo(L2));
+        block.addInstruction(l1);
+        block.addInstruction(new SIPush(1));
+        block.addInstruction(L2);
+        block.addInstruction(new NOP());
+        return null;
     }
 
-    private String getType(Exp exp) {
-        if (exp instanceof ASTInt) {
+    private String generateFrameId() {
+        return "0";// + System.currentTimeMillis();
+    }
+
+    private String getType(Type t) {
+        if (t instanceof IntType) {
             return "I";
-        } else if (exp instanceof ASTBool) {
+        } else if (t instanceof BoolType) {
             return "Z";
         }
         return "L";
@@ -408,6 +441,25 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
         out.print(sb.toString());
         out.close();
 
+    }
+
+    public void generateFrameFile(String id, String type) throws FileNotFoundException {
+        String directoryPath = System.getProperty("user.dir");
+
+        String frame = ".class public frame_" + id + "\n" +
+                ".super java/lang/Object\n" +
+                ".field public SL Ljava/lang/Object;\n" +
+                ".field public loc_0 " + type +
+                "\n.method public <init>()V\n" +
+                "aload_0\n" +
+                "invokenonvirtual java/lang/Object/<init>()V\n" +
+                "return\n" +
+                ".end method\n";
+
+        String filePath = directoryPath + File.separator + "frame_0.txt";
+        PrintStream out = new PrintStream(new FileOutputStream(filePath));
+        out.print(frame);
+        out.close();
     }
 
 }

@@ -80,6 +80,7 @@ TOKEN : /* OPERATORS */
 | < CONCAT: "concat">
 | < PRINT: "print">
 | < PRINTLN: "println">
+| < SPLIT: "split">
 }
 
 TOKEN :
@@ -88,6 +89,9 @@ TOKEN :
 | < #DIGIT : [ "0"-"9" ] >
 | < ID : (< LETTER >)+ >
 | < #LETTER : [ "a"-"z", "A"-"Z" ] >
+| < #LETTER_SPECIAL : [ "a"-"z", "A"-"Z", " ", "0"-"9", "!", "@", "#", "$", "%", "&", "/", "(", ")", "=", "?", "*",
+    "-", "+", "_", "{", "[", "]", "}", ";", ":"] >
+| < STRING : <QUOTE> (< LETTER_SPECIAL >)+ <QUOTE> >
 }
 
 Exp Start() :
@@ -130,9 +134,10 @@ Exp control_flow() :
   | <FIRST> e = decl() { return new ASTFirst(e); }
   | <SECOND> e = decl() { return new ASTSecond(e); }
   | <LAST> e = decl() { return new ASTLast(e); }
-  | <CONCAT> <LPAR> e = Expr() <COMMA> b = Expr() <RPAR> { return new ASTConcat(e, b); }
-  | <PRINTLN> <LPAR> e = Expr() <RPAR> { return new ASTPrintln(e);}
-  | <PRINT> <LPAR> e = Expr() <RPAR> { return new ASTPrint(e);}
+  | <CONCAT> <LPAR> e = decl() <COMMA> b = decl() <RPAR> { return new ASTConcat(e, b); }
+  | <SPLIT> <LPAR> e = decl() <COMMA> b = decl() <RPAR> { return new ASTSplit(e, b); }
+  | <PRINTLN> <LPAR> e = decl() <RPAR> { return new ASTPrintln(e);}
+  | <PRINT> <LPAR> e = decl() <RPAR> { return new ASTPrint(e);}
   |  e = assignment() { return e; }
 }
 
@@ -192,7 +197,7 @@ Exp Fact() :
 {
   x = <Num>
     { return new ASTInt(Integer.parseInt(x.image)); }
- | <QUOTE> x = <ID> <QUOTE> { return new ASTString(x.image); }
+ | x = <STRING> { return new ASTString(x.image); }
  | <TRUE> { return new ASTBool(true); }
  | <FALSE> { return new ASTBool(false); }
  | <MINUS> e = Fact() { return new ASTSub(new ASTInt(0),e); }

@@ -23,15 +23,13 @@ public class GenerateCode {
 
         parser = new Parser(System.in);
 
-        // Directory path where you want to save the file
-        String directoryPath = "C:\\Users\\aurel\\Documents\\IntelliJ Projects\\ProjetoICL\\project";
+        String directoryPath = System.getProperty("user.dir");
 
         try {
             Exp e = parser.Start();
             Type t = Typechecker.typeCheck(e, new Env<>());
             System.out.println("Type: " + t);
             if (!t.toString().equals("None")) {
-                // Construct the full file path
                 String filePath = directoryPath + File.separator + "result.txt";
                 CodeGen.writeToFile(e, filePath);
                 System.out.println("Written to file successfully at " + filePath);

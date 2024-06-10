@@ -11,10 +11,7 @@ import interpreter.*;
 import parser.*;
 import parser.Parser;
 import typechecker.Typechecker;
-import types.BoolType;
-import types.FunType;
-import types.IntType;
-import types.Type;
+import types.*;
 import values.BoolValue;
 import values.Value;
 
@@ -84,6 +81,31 @@ public class Console {
             }
         } catch (Exception e) {
             return new BoolValue(false);
+        }
+    }
+
+    public static Type typeCheck(String s) throws ParseException {
+        Parser parser = new Parser(new ByteArrayInputStream(s.getBytes()));
+        try {
+            Exp e = parser.Start();
+            Type t = Typechecker.typeCheck(e, new Env<>());
+            if (!t.toString().equals("None")) {
+                return t;
+            } else {
+                return NoneType.getNoneType();
+            }
+        } catch (Exception e) {
+            return NoneType.getNoneType();
+        }
+    }
+
+    public static Exp parse(String s) throws ParseException {
+        Parser parser = new Parser(new ByteArrayInputStream(s.getBytes()));
+        try {
+            Exp e = parser.Start();
+            return e;
+        } catch (Exception e) {
+            return null;
         }
     }
 }

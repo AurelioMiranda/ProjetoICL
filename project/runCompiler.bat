@@ -10,8 +10,13 @@ if not exist result.txt (
     exit /b 1
 )
 
-echo Running Jasmin to assemble result.txt...
-java -jar jasmin.jar result.txt
+if not exist frame_0.txt (
+    echo frame_0.txt not created.
+    exit /b 1
+)
+
+echo Running Jasmin to assemble Demo class...
+java -jar jasmin.jar result.txt frame_0.txt
 
 if not exist Demo.class (
     echo Demo.class not created.

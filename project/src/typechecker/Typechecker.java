@@ -11,6 +11,7 @@ import ast.control_flow.ASTWhile;
 import ast.print.ASTPrint;
 import ast.print.ASTPrintln;
 import ast.string.ASTConcat;
+import ast.string.ASTSplit;
 import ast.string.ASTString;
 import ast.tuples.*;
 import ast.identifiers.ASTIdentifier;
@@ -289,6 +290,7 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
         if (t2 instanceof NoneType) {
             return NoneType.getNoneType();
         }
+        astPrint.assignType(t2);
         return UnitType.getUnitType();
     }
 
@@ -298,6 +300,7 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
         if (t2 instanceof NoneType) {
             return NoneType.getNoneType();
         }
+        astPrintln.assignType(t2);
         return UnitType.getUnitType();
     }
 
@@ -308,12 +311,29 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
     }
 
     @Override
+    public Type visit(ASTSplit astSplit) {
+        Type t1 = typeCheck(astSplit.arg1, env);
+
+        if (t1 instanceof StringType) {
+            Type t2 = typeCheck(astSplit.arg2, env);
+            if (t2 instanceof StringType s2) {
+                List<Type> st = new ArrayList<>();
+                st.add(s2);
+                return new TupleType(st);
+            }
+        }
+
+        return NoneType.getNoneType();
+    }
+
+    @Override
     public Type visit(ASTLet astLet) {
         env = env.beginScope();
         for (Map.Entry<String, Exp> entry : astLet.variables.entrySet()) {
             String variableName = entry.getKey();
             Exp variableValue = entry.getValue();
             Type t1 = typeCheck(variableValue, env);
+            astLet.type = t1;
             env.bind(variableName, t1);
         }
         Type t = typeCheck(astLet.body, env);

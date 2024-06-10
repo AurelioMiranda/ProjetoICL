@@ -107,13 +107,19 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int PRINTLN = 51;
   /** RegularExpression Id. */
-  int INT = 52;
+  int SPLIT = 52;
   /** RegularExpression Id. */
-  int DIGIT = 53;
+  int INT = 53;
   /** RegularExpression Id. */
-  int ID = 54;
+  int DIGIT = 54;
   /** RegularExpression Id. */
-  int LETTER = 55;
+  int ID = 55;
+  /** RegularExpression Id. */
+  int LETTER = 56;
+  /** RegularExpression Id. */
+  int LETTER_SPECIAL = 57;
+  /** RegularExpression Id. */
+  int STRING = 58;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -172,10 +178,13 @@ public interface ParserConstants {
     "\"concat\"",
     "\"print\"",
     "\"println\"",
+    "\"split\"",
     "<INT>",
     "<DIGIT>",
     "<ID>",
     "<LETTER>",
+    "<LETTER_SPECIAL>",
+    "<STRING>",
   };
 
 }

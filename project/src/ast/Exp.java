@@ -3,6 +3,7 @@ package ast;
 import ast.print.ASTPrint;
 import ast.print.ASTPrintln;
 import ast.string.ASTConcat;
+import ast.string.ASTSplit;
 import ast.string.ASTString;
 import ast.tuples.*;
 import ast.references.*;
@@ -91,6 +92,8 @@ public interface Exp {
         T visit(ASTPrintln astPrintln);
 
         T visit(ASTSeq astSeq);
+
+        T visit(ASTSplit astSplit);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

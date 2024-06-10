@@ -24,7 +24,14 @@ public class TupleValue implements Value {
 
     @Override
     public String toString() {
-        return "{" + getFirst() + ", " + getSecond() + "}";
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for (Value v: tuples) {
+            sb.append(v.toString());
+            sb.append(", ");
+        }
+        String str = sb.substring(0, sb.length() - 2);
+        return str + "}";
     }
 
     @Override

@@ -37,11 +37,12 @@ public class Parser implements ParserConstants {
     case SECOND:
     case LAST:
     case MATCH:
-    case QUOTE:
     case CONCAT:
     case PRINT:
     case PRINTLN:
+    case SPLIT:
     case ID:
+    case STRING:
       e = decl();
       jj_consume_token(EOL);
                       {if (true) return e;}
@@ -127,11 +128,12 @@ public class Parser implements ParserConstants {
     case SECOND:
     case LAST:
     case MATCH:
-    case QUOTE:
     case CONCAT:
     case PRINT:
     case PRINTLN:
+    case SPLIT:
     case ID:
+    case STRING:
       e = control_flow();
                          {if (true) return e;}
       break;
@@ -239,23 +241,32 @@ public class Parser implements ParserConstants {
     case CONCAT:
       jj_consume_token(CONCAT);
       jj_consume_token(LPAR);
-      e = Expr();
+      e = decl();
       jj_consume_token(COMMA);
-      b = Expr();
+      b = decl();
       jj_consume_token(RPAR);
                                                            {if (true) return new ASTConcat(e, b);}
+      break;
+    case SPLIT:
+      jj_consume_token(SPLIT);
+      jj_consume_token(LPAR);
+      e = decl();
+      jj_consume_token(COMMA);
+      b = decl();
+      jj_consume_token(RPAR);
+                                                          {if (true) return new ASTSplit(e, b);}
       break;
     case PRINTLN:
       jj_consume_token(PRINTLN);
       jj_consume_token(LPAR);
-      e = Expr();
+      e = decl();
       jj_consume_token(RPAR);
                                          {if (true) return new ASTPrintln(e);}
       break;
     case PRINT:
       jj_consume_token(PRINT);
       jj_consume_token(LPAR);
-      e = Expr();
+      e = decl();
       jj_consume_token(RPAR);
                                        {if (true) return new ASTPrint(e);}
       break;
@@ -268,8 +279,8 @@ public class Parser implements ParserConstants {
     case FALSE:
     case NEW:
     case UNIT:
-    case QUOTE:
     case ID:
+    case STRING:
       e = assignment();
                         {if (true) return e;}
       break;
@@ -484,11 +495,9 @@ public class Parser implements ParserConstants {
       x = jj_consume_token(Num);
       {if (true) return new ASTInt(Integer.parseInt(x.image));}
       break;
-    case QUOTE:
-      jj_consume_token(QUOTE);
-      x = jj_consume_token(ID);
-      jj_consume_token(QUOTE);
-                              {if (true) return new ASTString(x.image);}
+    case STRING:
+      x = jj_consume_token(STRING);
+                  {if (true) return new ASTString(x.image);}
       break;
     case TRUE:
       jj_consume_token(TRUE);
@@ -582,11 +591,12 @@ public class Parser implements ParserConstants {
     case SECOND:
     case LAST:
     case MATCH:
-    case QUOTE:
     case CONCAT:
     case PRINT:
     case PRINTLN:
+    case SPLIT:
     case ID:
+    case STRING:
       e2 = control_flow();
                        ((ASTCall)e1).addArg(e2);
       label_9:
@@ -633,7 +643,7 @@ public class Parser implements ParserConstants {
       jj_la1_0 = new int[] {0xa406a191,0x8000,0x0,0xa406a190,0x0,0x0,0x0,0xa406a190,0x40000000,0x600000,0x600000,0x180000,0x180000,0x1e00,0x1e00,0xa0,0xa0,0x4040,0x4040,0xa006a190,0x8000,0x0,0xa406a190,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x4f794a,0x0,0x400000,0x4f794a,0x20,0x400,0x400,0x4f7908,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x410000,0x0,0x400,0x4f7908,};
+      jj_la1_1 = new int[] {0x49e794a,0x0,0x800000,0x49e794a,0x20,0x400,0x400,0x49e7908,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4800000,0x0,0x400,0x49e7908,};
    }
 
   /** Constructor with InputStream. */
@@ -750,7 +760,7 @@ public class Parser implements ParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[56];
+    boolean[] la1tokens = new boolean[59];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -767,7 +777,7 @@ public class Parser implements ParserConstants {
         }
       }
     }
-    for (int i = 0; i < 56; i++) {
+    for (int i = 0; i < 59; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
