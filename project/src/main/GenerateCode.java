@@ -23,8 +23,7 @@ public class GenerateCode {
 
         parser = new Parser(System.in);
 
-        // Directory path where you want to save the file
-        String directoryPath = "C:\\Users\\aurel\\Documents\\IntelliJ Projects\\ProjetoICL\\project";
+        String directoryPath = System.getProperty("user.dir")  + File.separator + "project"+ File.separator +"src";
 
         try {
             Exp e = parser.Start();
