@@ -8,6 +8,8 @@ import ast.arithmetic.ASTSub;
 import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
+import ast.print.ASTPrint;
+import ast.print.ASTPrintln;
 import ast.string.ASTConcat;
 import ast.string.ASTString;
 import ast.tuples.*;
@@ -279,6 +281,24 @@ public class Typechecker implements Exp.Visitor<Type, Env<Type>> {
         }
 
         return NoneType.getNoneType();
+    }
+
+    @Override
+    public Type visit(ASTPrint astPrint) {
+        Type t2 = typeCheck(astPrint.exp, env);
+        if (t2 instanceof NoneType) {
+            return NoneType.getNoneType();
+        }
+        return UnitType.getUnitType();
+    }
+
+    @Override
+    public Type visit(ASTPrintln astPrintln) {
+        Type t2 = typeCheck(astPrintln.exp, env);
+        if (t2 instanceof NoneType) {
+            return NoneType.getNoneType();
+        }
+        return UnitType.getUnitType();
     }
 
     @Override

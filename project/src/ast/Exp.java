@@ -1,5 +1,7 @@
 package ast;
 
+import ast.print.ASTPrint;
+import ast.print.ASTPrintln;
 import ast.string.ASTConcat;
 import ast.string.ASTString;
 import ast.tuples.*;
@@ -83,6 +85,10 @@ public interface Exp {
         T visit(ASTString astString);
 
         T visit(ASTConcat astConcat);
+
+        T visit(ASTPrint astPrint);
+
+        T visit(ASTPrintln astPrintln);
     }
 
     <T> T accept(Visitor<T, Env<T>> v);

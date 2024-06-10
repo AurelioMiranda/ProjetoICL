@@ -13,6 +13,7 @@ import ast.logical.*;
 import ast.references.*;
 import ast.tuples.*;
 import ast.string.*;
+import ast.print.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,8 @@ TOKEN : /* OPERATORS */
 | < WITH: "with">
 | < QUOTE: "\"">
 | < CONCAT: "concat">
+| < PRINT: "print">
+| < PRINTLN: "println">
 }
 
 TOKEN :
@@ -122,6 +125,8 @@ Exp control_flow() :
   | <SECOND> e = decl() { return new ASTSecond(e); }
   | <LAST> e = decl() { return new ASTLast(e); }
   | <CONCAT> <LPAR> e = Expr() <COMMA> b = Expr() <RPAR> { return new ASTConcat(e, b); }
+  | <PRINTLN> <LPAR> e = Expr() <RPAR> { return new ASTPrintln(e);}
+  | <PRINT> <LPAR> e = Expr() <RPAR> { return new ASTPrint(e);}
   |  e = assignment() { return e; }
 }
 

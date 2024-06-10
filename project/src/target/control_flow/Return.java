@@ -2,12 +2,12 @@ package target.control_flow;
 
 import target.Instruction;
 
-public class NOP extends Instruction {
+public class Return extends Instruction {
 
-    public NOP () { }
+    public Return () { }
 
     @Override
     public String toString() {
-        return "nop";
+        return "return";
     }
 }

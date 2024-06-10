@@ -23,14 +23,19 @@ public class GenerateCode {
 
         parser = new Parser(System.in);
 
+        // Directory path where you want to save the file
+        String directoryPath = "C:\\Users\\aurel\\Documents\\IntelliJ Projects\\ProjetoICL\\project";
+
         while (true) {
             try {
                 Exp e = parser.Start();
                 Type t = Typechecker.typeCheck(e, new Env<>());
                 System.out.println("Type: " + t);
                 if (!t.toString().equals("None")) {
-                    CodeGen.writeToFile(e, "result.txt");
-                    System.out.println("Written to file successfully");
+                    // Construct the full file path
+                    String filePath = directoryPath + File.separator + "result.txt";
+                    CodeGen.writeToFile(e, filePath);
+                    System.out.println("Written to file successfully at " + filePath);
                 } else {
                     System.out.println("Non computable.");
                 }

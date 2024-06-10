@@ -3,22 +3,18 @@ package target.control_flow;
 import target.Instruction;
 
 public class Label extends Instruction {
-    private int position;
+    private String name;
 
-    public Label() { }
-
-    public int getPosition() {
-        return position;
+    public Label(String name) {
+        this.name = name;
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public String getName(){
+        return name;
     }
 
     @Override
     public String toString() {
-        return "Label{" +
-                "position=" + position +
-                '}';
+        return name + ":";
     }
 }

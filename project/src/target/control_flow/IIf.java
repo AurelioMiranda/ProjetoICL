@@ -8,4 +8,9 @@ public class IIf  extends Instruction {
         op = "ifne";
         args = null;
     }
+
+    public IIf(Label L) {
+        op = "ifne " + L.getName();
+        args = null;
+    }
 }

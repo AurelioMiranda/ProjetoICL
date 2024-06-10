@@ -8,6 +8,8 @@ import ast.arithmetic.ASTSub;
 import ast.control_flow.ASTElse;
 import ast.control_flow.ASTIf;
 import ast.control_flow.ASTWhile;
+import ast.print.ASTPrint;
+import ast.print.ASTPrintln;
 import ast.string.ASTConcat;
 import ast.string.ASTString;
 import ast.tuples.*;
@@ -441,6 +443,20 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         }
 
         throw new RuntimeException("concat can only be applied to Strings.");
+    }
+
+    @Override
+    public Value visit(ASTPrint astPrint) {
+        Value v1 = interpret(astPrint.exp, env);
+        System.out.print(v1);
+        return new UnitValue();
+    }
+
+    @Override
+    public Value visit(ASTPrintln astPrintln) {
+        Value v1 = interpret(astPrintln.exp, env);
+        System.out.println(v1);
+        return new UnitValue();
     }
 
 
